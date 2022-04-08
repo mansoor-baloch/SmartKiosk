@@ -1,0 +1,182 @@
+﻿using SmartKioskApp.Models;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SmartKioskApp.ViewModels
+{
+    class MenuViewModel
+    {
+        SqlCommand cmd = null;
+        private string sql = null;
+        //private string ConnectionString = "Integrated Security=SSPI;" + "Initial Catalog=LocDBKiosk;" + "Data Source=localhost;";
+        public static string ConnectionString = ConfigurationManager.AppSettings["LocalCon"].ToString();
+        private SqlConnection conn = null;
+        SqlDataReader reader;
+        public static int ItemsCount;
+        public static int CategoriesCount;
+        public static string CategoryName = "";
+        public ObservableCollection<Category> Categories
+        {
+            get;
+            set;
+        }
+        public ObservableCollection<Menu> Menus
+        {
+            get;
+            set;
+        }
+        public ObservableCollection<Cart> myCart
+        {
+            get;
+            set;
+        }
+        public ObservableCollection<OrderSummary> Orders
+        {
+            get;
+            set;
+        }
+        public ObservableCollection<Icons> myIcons
+        {
+            get;
+            set;
+        }
+        
+        public void LoadMenu(string CategoryName )
+        {
+            ObservableCollection<Menu> menu1 = new ObservableCollection<Menu>();
+            conn = new SqlConnection(ConnectionString);
+            conn.ConnectionString = ConnectionString;
+            conn.Open();
+            sql = "select ItemName, Category, PriceQP, PriceHP, PriceSP, ItemImage, IsActive, HasPortion from tblMenu " +
+            "inner join tblCategory on tblMenu.Category = tblCategory.CategoryName " +
+            "where tblMenu.Category = '" + CategoryName + "' and IsActive = 1 ";
+            cmd = new SqlCommand(sql, conn);
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                byte[] arr = (byte[])(reader.GetValue(5));
+                menu1.Add(new Menu { ItemName = Convert.ToString(reader.GetValue(0)).Trim(), PriceQP = Convert.ToInt32(reader.GetValue(2)), PriceMP = Convert.ToInt32(reader.GetValue(3)), PriceSP = Convert.ToInt32(reader.GetValue(4)), ItemImage = arr, HasPortion = Convert.ToBoolean(reader.GetValue(7)) });
+            }
+            reader.Close();
+            cmd.Dispose();
+            conn.Close();
+
+            Menus = menu1;
+
+            CountItems(CategoryName);
+        }
+        public void CountItems(string CatName)
+        {
+            try
+            {
+                conn = new SqlConnection(ConnectionString);
+                conn.ConnectionString = ConnectionString;
+                conn.Open();
+
+                //Query for getting Count
+                string QueryCnt = "select count(*) as ItemsCount from tblMenu where category = '" + CatName + "' ";
+
+                //Execute Queries and save results into variables
+                SqlCommand CmdCnt = conn.CreateCommand();
+                CmdCnt.CommandText = QueryCnt;
+
+                ItemsCount = (Int32)CmdCnt.ExecuteScalar();
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        public void CountCategories()
+        {
+            try
+            {
+                conn = new SqlConnection(ConnectionString);
+                conn.ConnectionString = ConnectionString;
+                conn.Open();
+
+                //Query for getting Count
+                string QueryCnt = "select count(distinct(CategoryName)) from tblCategory where isactive = 1";
+
+                //Execute Queries and save results into variables
+                SqlCommand CmdCnt = conn.CreateCommand();
+                CmdCnt.CommandText = QueryCnt;
+
+                CategoriesCount = (Int32)CmdCnt.ExecuteScalar();
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        public void LoadCategory()
+        {
+            ObservableCollection<Category> categories = new ObservableCollection<Category>();
+
+            conn = new SqlConnection(ConnectionString);
+            conn.ConnectionString = ConnectionString;
+            conn.Open();
+            sql = "select * from tblcategory where isactive = 1";
+            cmd = new SqlCommand(sql, conn);
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                byte[] arr = (byte[])(reader.GetValue(2));
+                categories.Add(new Category { CatName = Convert.ToString(reader.GetValue(1)).Trim(), CatIcon = arr });
+            }
+            reader.Close();
+            cmd.Dispose();
+            conn.Close();
+            Categories = categories;
+            
+
+
+        }
+
+        public void LoadIcons()
+        {
+            ObservableCollection<Icons> icons = new ObservableCollection<Icons>();
+            conn = new SqlConnection(ConnectionString);
+            conn.ConnectionString = ConnectionString;
+            conn.Open();
+            sql = "select * from tbl_icons ";
+            cmd = new SqlCommand(sql, conn);
+            reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                byte[] arr = (byte[])(reader.GetValue(2));
+                icons.Add(new Icons { Description = Convert.ToString(reader.GetValue(1)).Trim(), Icon = arr });
+            }
+            reader.Close();
+            cmd.Dispose();
+            conn.Close();
+            myIcons = icons;
+
+        }
+        public void LoadCart()
+        {
+            ObservableCollection<Cart> cart = new ObservableCollection<Cart>();
+
+
+            myCart = cart;
+        }
+        public void LoadOrderSummary()
+        {
+            ObservableCollection<OrderSummary> orderSummaries = new ObservableCollection<OrderSummary>();
+
+
+            Orders = orderSummaries;
+        }
+
+    }
+}

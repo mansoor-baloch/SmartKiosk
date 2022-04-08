@@ -1,0 +1,221 @@
+﻿<Window x:Class="SmartKioskApp.Views.PreviewOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SmartKioskApp.Views" xmlns:vm="clr-namespace:SmartKioskApp.ViewModels"
+        mc:Ignorable="d"
+        WindowStyle="None" Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        Title="" Height="700" Width="600">
+
+    <Border  CornerRadius="55" BorderBrush="Brown" BorderThickness="3.5" Background="White">
+
+        <Grid>
+
+
+
+            <DataGrid x:Name="prevOrder" DataContext="{Binding carts}" ItemsSource="{Binding carts}" Grid.Row="1" Grid.ColumnSpan="4" AutoGenerateColumns="False" BorderBrush="Transparent" 
+                      Background="Transparent" BorderThickness="3"  HorizontalAlignment="Center" Margin="5,21,4,0"  
+                  VerticalAlignment="Top"  GridLinesVisibility="All" FontFamily="Segoe UI" FontSize="17" IsReadOnly="True" VerticalGridLinesBrush="Transparent"
+                  CanUserReorderColumns="False"  HorizontalContentAlignment="Center" CanUserResizeColumns="False" VerticalContentAlignment="Center" CanUserSortColumns="False"  Width="578"
+                      HorizontalScrollBarVisibility="Disabled"  HorizontalGridLinesBrush="Transparent" RowHeight="32" Padding="0,3,0,0" >
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn x:Name="itemName" Header="Description"  Width="160" Binding="{Binding Name}"  Visibility="Hidden" ></DataGridTextColumn>
+                    <DataGridTextColumn x:Name="itemPortion" Header="Portion" Width="95" Binding="{Binding Portion}" Visibility="Hidden"></DataGridTextColumn>
+
+                    <DataGridTextColumn x:Name="itemPrice" Header="Unit Price" Width="105" Binding="{Binding UnitPrice}" Visibility="Hidden"></DataGridTextColumn>
+                    <DataGridTextColumn x:Name="itemQuantity" Header="Quantity" Width="90" Binding="{Binding Quantity}" Visibility="Hidden"></DataGridTextColumn>
+
+                    <DataGridTextColumn x:Name="itemTotalPrice" Header="Total Price" Width="110" Binding="{Binding TotalPrice}" Visibility="Hidden"></DataGridTextColumn>
+
+                </DataGrid.Columns>
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="FontSize" Value="19"/>
+                        <Setter Property="FontFamily" Value="Constantia" />
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected"
+                        Value="True">
+                                <Setter Property="Background"
+                        Value="Transparent" />
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected"
+                        Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+
+            </DataGrid>
+
+            <Label Grid.Row="0" Grid.ColumnSpan="4" Content="Review Order" Foreground="Brown" FontWeight="Black" FontSize="28" 
+               HorizontalAlignment="Center" VerticalAlignment="Bottom">
+
+            </Label>
+
+            <Line Grid.Row="3" Grid.ColumnSpan="4" Stroke="SaddleBrown" StrokeThickness="4" X1="0" Y1="0" X2="600" Y2="0" ></Line>
+
+
+            <Label Grid.Row="2" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center"  Margin="0,0,10,0" FontFamily="normal"
+                           x:Name="txtTotalAmount" Content="{Binding DueAmount}" DataContext="{Binding Orders}"  FontSize="22" FontWeight="Bold"></Label>
+            <Label Grid.Row="2" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Total Rs. "
+                          FontSize="22" FontFamily="normal" FontWeight="Bold" ></Label>
+
+            <!--Add or remove an item-->
+            <Button Click="btnAddAnother" Grid.Column="0" Grid.Row="4" Margin="5,0,0,20" HorizontalAlignment="Right" Background="Transparent" BorderBrush="Transparent">
+                <Image x:Name="imgUpdateCart" ></Image>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Grid Background="Transparent">
+                                                <ContentPresenter  VerticalAlignment="Center" ></ContentPresenter>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+
+            <Button Grid.Column="1" Grid.Row="4" Background="Transparent"  BorderBrush="Transparent" Height="auto"  
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Click="btnAddAnother" >
+                <StackPanel Orientation="Horizontal" >
+
+                    <Label  Background="Transparent"  Content="BACK TO CART" FontSize="23"
+                               FontFamily="normal" FontWeight="Bold" Foreground="DarkBlue" Width="auto" >
+                        <Label.BitmapEffect>
+                            <DropShadowBitmapEffect Color="Black" Direction="320" ShadowDepth="5" Opacity=".4" Softness="3" />
+                        </Label.BitmapEffect>
+                    </Label>
+                </StackPanel>
+
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Grid Background="Transparent">
+                                                <ContentPresenter VerticalAlignment="Center" Margin="1" ></ContentPresenter>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+
+
+
+            <!--Cancel Order-->
+
+            <Button Grid.Column="2" Grid.Row="4" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Bottom" 
+                                        HorizontalAlignment="Center" Click="btnCancelOrder"  >
+                <Label Background="Transparent" Content="CANCEL ORDER" FontSize="24" 
+                                FontWeight="SemiBold" Width="auto" FontFamily="normal" Foreground="#B22222">
+                    <Label.BitmapEffect>
+                        <DropShadowBitmapEffect Color="Black" Direction="320" ShadowDepth="4" Opacity=".6" Softness="9" />
+                    </Label.BitmapEffect>
+                </Label>
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Grid Background="Transparent">
+                                                <ContentPresenter  VerticalAlignment="Center" ></ContentPresenter>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+
+            <!--Checkout-->
+            <Border Grid.Column="2" Grid.Row="3" BorderBrush="Gainsboro" Background="#008080" VerticalAlignment="Bottom" 
+                    BorderThickness="2" CornerRadius="5"   Width="auto" Height="auto " HorizontalAlignment="Center">
+                <Button Background="Transparent"  BorderBrush="Transparent" Height="auto" Click="btnCheckOut" Margin='5,0,5,0'>
+                    <TextBlock TextAlignment="Center" Background="Transparent"  Text="CHECKOUT" FontSize="30"
+                               FontFamily="normal" FontWeight="Bold" Width="auto" Foreground="White"/>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Grid Background="#008080">
+                                                    <Border  Background="#008080" BorderBrush="Gainsboro" VerticalAlignment="Center" ></Border>
+                                                    <ContentPresenter Margin="0" ></ContentPresenter>
+                                                    <TextBlock Background="Transparent"></TextBlock>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Border>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="5*"></RowDefinition>
+                <RowDefinition Height="0.8*"></RowDefinition>
+                <RowDefinition Height="0.8*"></RowDefinition>
+                <RowDefinition Height="0.8*"></RowDefinition>
+                <RowDefinition Height="0.4*"></RowDefinition>
+
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.3*"></ColumnDefinition>
+                <ColumnDefinition Width="1.7*"></ColumnDefinition>
+                <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                <ColumnDefinition Width="0.15*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+
+        </Grid>
+    </Border>
+</Window>

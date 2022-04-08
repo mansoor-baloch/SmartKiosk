@@ -1,0 +1,607 @@
+﻿<Window x:Class="SmartKioskApp.Views.ItemMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SmartKioskApp.Views" xmlns:vm="clr-namespace:SmartKioskApp.ViewModels"
+        WindowStyle="None"
+        mc:Ignorable="d" 
+        WindowState="Maximized"
+        ResizeMode="NoResize"
+         Background="Transparent"
+        AllowsTransparency="True"
+        Title="" Height="450" Width="800">
+    <!--<Window.DataContext>
+        <vm:MenuViewModel/>
+    </Window.DataContext>-->
+
+    <Window.Resources>
+        <ResourceDictionary >
+            <Style x:Key="styleToggleBtn" TargetType="ToggleButton">
+                <Style.Triggers>
+                    <Trigger x:Name="Event1" Property="IsChecked" Value="True">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Grid Background="Moccasin">
+                                        
+                                        <ContentPresenter VerticalAlignment="Center" ></ContentPresenter>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Grid Background="Moccasin">
+                                        
+                                        <ContentPresenter VerticalAlignment="Center" ></ContentPresenter>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="SecBtnStyle" TargetType="Button">
+                <Style.Triggers>
+                    <Trigger Property="IsMouseDirectlyOver" Value="True">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid Background="Transparent">
+                                        <Border BorderBrush="Brown" BorderThickness="3" CornerRadius="5"></Border>
+                                        <ContentPresenter TextBlock.Foreground="White" TextBlock.TextAlignment="Center" Margin="8" ></ContentPresenter>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid Background="Transparent">
+                                        <Border BorderBrush="Brown" BorderThickness="3" CornerRadius="5"></Border>
+                                        <ContentPresenter TextBlock.Foreground="White" TextBlock.TextAlignment="Center" Margin="8" ></ContentPresenter>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+        
+
+    </Window.Resources>
+
+    <Grid Background="White" x:Name="winItemMenu">
+
+        <!--categories section begins here-->
+
+        <!--category-1-->
+        <Border x:Name="txtCategory1" Grid.Column="0" Grid.Row="0"  Background="#D7FAEB">
+            <ToggleButton x:Name="tBtnCat1" Style="{StaticResource styleToggleBtn}" Background="#D7FAEB" Click="btnCategory1"  BorderBrush="Transparent" FontWeight="Bold" >
+                <StackPanel  >
+                    <Image x:Name="imgCat1" HorizontalAlignment="Center" VerticalAlignment="Top" Height="75"></Image>
+                    <TextBlock x:Name="txtCat1" Text="{Binding CatName}" DataContext="{Binding Categories}" FontWeight="Bold" HorizontalAlignment="Center" 
+                               VerticalAlignment="Bottom"  FontSize="27" Background="Transparent" Height="auto" Foreground="Brown" />
+                </StackPanel>
+                
+            </ToggleButton>
+        </Border>
+
+        <!--category-2-->
+        <Border x:Name="txtCategory2" Grid.Column="0" Grid.Row="1" Grid.RowSpan="3" BorderThickness="0" Background="#D7FAEB">
+            <ToggleButton x:Name="tBtnCat2" Style="{StaticResource styleToggleBtn}" FontWeight="Bold"  FontSize="21" Background="#D7FAEB" Click="btnCategory2" BorderBrush="Transparent"  >
+
+                <StackPanel  >
+                    <Image x:Name="imgCat2" VerticalAlignment="Top" Height="75"></Image>
+                    <TextBlock x:Name="txtCat2" Text="{Binding CatName}" DataContext="{Binding Categories}" TextAlignment="Center" Background="Transparent" Foreground="Brown" FontSize="27"></TextBlock>
+                </StackPanel>
+
+            </ToggleButton>
+        </Border>
+
+        <!--category-3-->
+        <Border x:Name="txtCategory3"  Grid.Column="0" Grid.Row="4" Grid.RowSpan="2" BorderThickness="0" Background="#D7FAEB">
+            <ToggleButton x:Name="tBtnCat3" Style="{StaticResource styleToggleBtn}" Click="btnCategory3" Background="#D7FAEB	"  FontWeight="Bold" BorderBrush="Transparent" >
+                <StackPanel  >
+                    <Image x:Name="imgCat3" HorizontalAlignment="Center" VerticalAlignment="Top" Height="75"></Image>
+                    <TextBlock x:Name="txtCat3" Text="{Binding CatName}" DataContext="{Binding Categories}" FontWeight="Bold"  FontSize="27" Foreground="Brown" Background="Transparent" VerticalAlignment="Bottom" 
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+
+            </ToggleButton>
+        </Border>
+
+        <Line Grid.Column="1" Grid.RowSpan="6" Stroke="Brown" StrokeThickness="4" X1="0" Y1="0" X2="0" Y2="2000" ></Line>
+        <Line Grid.Row="6" Grid.ColumnSpan="12" Stroke="Brown" StrokeThickness="4" X1="0" Y1="0" X2="6000" Y2="0" ></Line>
+        <!--<Line Grid.Row="8" x:Name="cartBorder" Visibility="Hidden" Grid.Column="1" Grid.ColumnSpan="9" Stroke="#20B2AA" StrokeThickness="1.5" X1="0" Y1="0" X2="6000" Y2="0" ></Line>-->
+
+        <!--displaying the menu items begins here-->
+
+        <ScrollViewer Grid.Row="0" Grid.Column=" 1" Grid.ColumnSpan="12" Grid.RowSpan="6" Background="White" CanContentScroll="True" Focusable="False" 
+                      PanningMode="Both" VerticalScrollBarVisibility="Auto" Margin="10,0,0,0">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="350"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="350"/>
+                    <RowDefinition Height="45"/>
+                    <RowDefinition Height="350"/>
+                    <RowDefinition Height="45"/>
+                </Grid.RowDefinitions>
+                <!--Section -1-->
+                <Border x:Name="sec1" Grid.Row="0" Grid.Column="0" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec1" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem1"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel  Grid.Row="1" Grid.Column="0" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem1" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -2-->
+                <Border x:Name="sec2" Grid.Row="0" Grid.Column="1" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec2" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem2"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel  Grid.Row="1" Grid.Column="1" Margin="7" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem2" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -3-->
+                <Border x:Name="sec3" Grid.Row="0" Grid.Column="2" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec3" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem3"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel  Grid.Row="1" Grid.Column="2" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem3" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -4-->
+                <Border x:Name="sec4" Grid.Row="2" Grid.Column="0" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec4" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem4"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel  Grid.Row="3" Grid.Column="0" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem4" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -5-->
+                <Border x:Name="sec5" Grid.Row="2" Grid.Column="1" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec5" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem5"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel Grid.Row="3"  Grid.Column="1" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem5" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -6-->
+                <Border x:Name="sec6" Grid.Row="2" Grid.Column="2" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec6" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem6"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel Grid.Column="2" Grid.Row="3"  Margin="7" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem6" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -7-->
+                <Border x:Name="sec7" Grid.Row="4" Grid.Column="0" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec7" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem7"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel Grid.Column="0" Grid.Row="5" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem7" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -8-->
+                <Border x:Name="sec8" Grid.Row="4" Grid.Column="1" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec8" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem8"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel Grid.Column="1" Grid.Row="5" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem8" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+                <!--Section -9-->
+                <Border x:Name="sec9" Grid.Row="4" Grid.Column="2" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                    <Button Style="{StaticResource SecBtnStyle}" Click="btnSec9" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image x:Name="imgItem9"   Width="auto" Stretch="Fill"/>
+
+                    </Button>
+                </Border>
+                <StackPanel Grid.Column="2" Grid.Row="5" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
+                    <TextBlock  x:Name="txtItem9" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                </StackPanel>
+            </Grid>
+            
+            
+        </ScrollViewer>
+
+           
+        <!--menu-items display ends here-->
+
+        <!--cart display starts here-->
+        <Border Grid.Column="0" Grid.Row="6" Grid.RowSpan="4" BorderBrush="Transparent"  CornerRadius="4" HorizontalAlignment="Center" Margin="50">
+            <StackPanel Width="auto" Height="auto" VerticalAlignment="Center">
+                <Image x:Name="imgCart"  >
+
+                </Image>
+            </StackPanel>
+
+        </Border>
+
+        <!--cart item-1-->
+        <StackPanel Grid.Row="6" Grid.Column="1"  HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock  x:Name="cartItem1"  DataContext="{Binding myCart}"
+                       Text="{Binding Name}"  Foreground="#111F50"  FontSize="24" FontWeight="DemiBold" ></TextBlock>
+        </StackPanel>
+
+        <StackPanel  Grid.Row="6" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del1" DataContext="{Binding myCart}" Click="btnDel1" BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon1"  >
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec1" Grid.ColumnSpan="2" Visibility="Hidden" Grid.Column="1" Grid.Row="7" VerticalAlignment="Top" Margin="0,0,10,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion1"  Text="{Binding Portion}" DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec1" DataContext="{Binding myCart}"   Width="30"  FontSize="20" Click="btnDec1" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity1" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Inc1" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc1" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <!--cart item-2-->
+        <StackPanel Grid.Row="6" Grid.Column="3"  HorizontalAlignment="Center"  VerticalAlignment="Center" >
+            <TextBlock   Foreground="#111F50"  FontSize="24" 
+                       FontWeight="DemiBold"  x:Name="cartItem2"  DataContext="{Binding myCart}" Text="{Binding Name}"></TextBlock>
+        </StackPanel>
+
+        <StackPanel Grid.Row="6" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del2" DataContext="{Binding myCart}" Click="btnDel2"  BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon2">
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec2" Grid.Column="3" Grid.ColumnSpan="2" Visibility="Hidden"  Grid.Row="7" VerticalAlignment="Top" Margin="0,0,10,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion2"  Text="{Binding Portion}"  DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec2" DataContext="{Binding myCart}"   Width="30"  FontSize="20"   Click="btnDec2" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity2" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Inc2" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc2" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <!--cart item-3-->
+        <StackPanel Grid.Row="6" Grid.Column="5"   HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock  x:Name="cartItem3"  DataContext="{Binding myCart}"
+                       Text="{Binding Name}"  Foreground="#111F50"  FontSize="24" FontWeight="DemiBold" ></TextBlock>
+        </StackPanel>
+        <StackPanel  Grid.Row="6" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del3" DataContext="{Binding myCart}" Click="btnDel3" BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon3" >
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec3" Visibility="Hidden" Grid.ColumnSpan="2" Grid.Column="5" Grid.Row="7" Margin="0,0,5,0" VerticalAlignment="Top" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion3"  Text="{Binding Portion}"  DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec3" DataContext="{Binding myCart}"   Width="30"  FontSize="20" Click="btnDec3" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity3" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button  x:Name="Inc3" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc3" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <!--cart item-4-->
+        <StackPanel Grid.Row="6" Grid.Column="7" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock  x:Name="cartItem4"  DataContext="{Binding myCart}"
+                       Text="{Binding Name}"  Foreground="#111F50"  FontSize="24" FontWeight="DemiBold" ></TextBlock>
+        </StackPanel>
+        <StackPanel  Grid.Row="6" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del4" DataContext="{Binding myCart}" Click="btnDel4" BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon4" >
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec4" Visibility="Hidden" Grid.Column="7" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.Row="7" Margin="0,0,5,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion4"  Text="{Binding Portion}"  DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec4" DataContext="{Binding myCart}"   Width="30"  FontSize="20" Click="btnDec4" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity4" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Inc4" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc4" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <!--cart item-5-->
+        <StackPanel Grid.Row="8" Grid.Column="1"  HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock  x:Name="cartItem5"  DataContext="{Binding myCart}"
+                       Text="{Binding Name}"  Foreground="#111F50"  FontSize="24" FontWeight="DemiBold" ></TextBlock>
+        </StackPanel>
+        <StackPanel  Grid.Row="8" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del5" DataContext="{Binding myCart}" Click="btnDel5" BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon5" >
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec5" Visibility="Hidden" Grid.Column="1"  Grid.ColumnSpan="2" VerticalAlignment="Top"  Grid.Row="9" Margin="0,0,5,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion5"  Text="{Binding Portion}"  DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec5" DataContext="{Binding myCart}"   Width="30"  FontSize="20" Click="btnDec5" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity5" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Inc5" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc5" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <!--cart item-6-->
+        <StackPanel Grid.Row="8" Grid.Column="3"  HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock  x:Name="cartItem6"  DataContext="{Binding myCart}"
+                       Text="{Binding Name}"  Foreground="#111F50"  FontSize="24" FontWeight="DemiBold" ></TextBlock>
+        </StackPanel>
+
+
+        <StackPanel  Grid.Row="8" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del6" DataContext="{Binding myCart}" Click="btnDel6" BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon6" >
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec6" Visibility="Hidden" Grid.Column="3" Grid.ColumnSpan="2" VerticalAlignment="Top"  Grid.Row="9" Margin="0,0,5,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion6"  Text="{Binding Portion}"  DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec6" DataContext="{Binding myCart}"   Width="30"  FontSize="20" Click="btnDec6" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity6" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Inc6" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc6" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <!--cart item-7-->
+        <StackPanel Grid.Row="8" Grid.Column="5"  HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock  x:Name="cartItem7"  DataContext="{Binding myCart}"
+                       Text="{Binding Name}"  Foreground="#111F50"  FontSize="24" FontWeight="DemiBold" ></TextBlock>
+        </StackPanel>
+        <StackPanel  Grid.Row="8" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del7" DataContext="{Binding myCart}" Click="btnDel7" BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon7" >
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec7" Visibility="Hidden" Grid.Column="5" Grid.ColumnSpan="2"  VerticalAlignment="Top"  Grid.Row="9" Margin="0,0,5,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion7"  Text="{Binding Portion}"  DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec7" DataContext="{Binding myCart}"   Width="30"  FontSize="20" Click="btnDec7" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity7" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Inc7" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc7" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+
+        <!--cart item-8-->
+        <StackPanel Grid.Row="8" Grid.Column="7" Grid.ColumnSpan="2"  HorizontalAlignment="Right" VerticalAlignment="Center">
+            <TextBlock  x:Name="cartItem8"  DataContext="{Binding myCart}"
+                       Text="{Binding Name}"  Foreground="#111F50"  FontSize="24" FontWeight="DemiBold" ></TextBlock>
+        </StackPanel>
+        <StackPanel  Grid.Row="8" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center" >
+            <Button x:Name="Del8" DataContext="{Binding myCart}" Click="btnDel8" BorderBrush="Transparent" Background="Transparent" Margin="12">
+                <Image x:Name="delIcon8" >
+                </Image>
+            </Button>
+        </StackPanel>
+        <StackPanel x:Name="btnIncDec8" Visibility="Hidden" Grid.Column="7" Grid.ColumnSpan="3" VerticalAlignment="Top"  Grid.Row="9" Margin="0,0,5,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock x:Name="txtPortion8"  Text="{Binding Portion}"  DataContext="{Binding myCart}" Margin="0,0,15,0" FontSize="15" FontWeight="Heavy">
+
+            </TextBlock>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Dec8" DataContext="{Binding myCart}"  Width="30"  FontSize="20" Click="btnDec8" Background="Transparent" BorderBrush="Transparent">
+                    <TextBlock Text="-" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+            <Border  BorderBrush="LightBlue" BorderThickness="1" Background="Transparent" CornerRadius="2" Height="35">
+                <TextBlock x:Name="Quantity8" Text="{Binding Quantity}" DataContext="{Binding myCart}" Width="40" FontWeight="Bold" TextAlignment="Center" FontSize="20" >
+                </TextBlock>
+            </Border>
+            <Border BorderBrush="LightBlue" BorderThickness="1" Background="#111F50" CornerRadius="4" Height="35">
+                <Button x:Name="Inc8" DataContext="{Binding myCart}" Width="30" FontSize="20"  BorderBrush="Transparent" Click="btnInc8" Background="Transparent" >
+                    <TextBlock Text="+" Foreground="White"></TextBlock>
+                </Button>
+            </Border>
+        </StackPanel>
+        <!--cart display ends here-->
+
+        <!--buttons/controls to proceed the transaction-->
+        <Border x:Name="Checkout" Grid.Column="10" Grid.RowSpan="3" Grid.Row="6" BorderBrush="Gainsboro" Visibility="Hidden"  Background="#008080" VerticalAlignment="Center" 
+                    BorderThickness="2" CornerRadius="5"   Width="auto" Height="auto" HorizontalAlignment="Center">
+            <Button Background="Transparent"  BorderBrush="Transparent" Height="auto" Click="btnCheckout" Margin="5,0,5,0">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock TextAlignment="Center" Background="Transparent"  Text="Review Order" FontSize="28" Margin="0,0,0,4"
+                               FontFamily="Candara" FontWeight="Heavy" Width="auto" Foreground="White"/>
+                    <Line Grid.Row="6" Grid.ColumnSpan="12" HorizontalAlignment="Center" Stroke="White" StrokeThickness="3" X1="0" Y1="0" X2="200" Y2="0" ></Line>
+                    <TextBlock TextAlignment="Center" Background="Transparent"  Text="CHECKOUT" FontSize="28" 
+                               FontFamily="Candara" FontWeight="Heavy" Width="auto" Foreground="White"/>
+                </StackPanel>
+
+
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Grid Background="#008080">
+                                                <ContentPresenter VerticalAlignment="Center" ></ContentPresenter>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Border>
+
+
+        <Button x:Name="Cancel" Visibility="Hidden" Grid.Column="10" Grid.Row="8" Grid.RowSpan="2" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" 
+            HorizontalAlignment="Center" Click="btnCancel" Margin="5,0,5,0" >
+            <Label Background="Transparent" Content="CANCEL ORDER" FontSize="20" 
+                                FontWeight="SemiBold" Width="auto" FontFamily="normal" Foreground="#B22222">
+                <Label.BitmapEffect>
+                    <DropShadowBitmapEffect Color="Black" Direction="320" ShadowDepth="8" Opacity=".7" Softness="9" />
+                </Label.BitmapEffect>
+            </Label>
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Grid Background="Transparent">
+                                            <ContentPresenter  VerticalAlignment="Center" ></ContentPresenter>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
+        <!--proceeding buttons end here-->
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
+            <RowDefinition Height="0.5*"></RowDefinition>
+            <RowDefinition Height="0.75*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
+            <RowDefinition Height="0.23*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
+            <RowDefinition Height="0.25*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.7*"></ColumnDefinition>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            <ColumnDefinition Width="0.15*"></ColumnDefinition>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            <ColumnDefinition Width="0.15*"></ColumnDefinition>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            <ColumnDefinition Width="0.15*"></ColumnDefinition>
+            <ColumnDefinition Width="0.35*"></ColumnDefinition>
+            <ColumnDefinition Width="0.15*"></ColumnDefinition>
+            <ColumnDefinition Width="0.15*"></ColumnDefinition>
+            <ColumnDefinition Width="0.75*"></ColumnDefinition>
+            <ColumnDefinition Width="0.1*"></ColumnDefinition>
+
+        </Grid.ColumnDefinitions>
+
+
+
+
+    </Grid>
+
+</Window>
