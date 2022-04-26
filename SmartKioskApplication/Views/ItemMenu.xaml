@@ -8,6 +8,7 @@
         mc:Ignorable="d" 
         WindowState="Maximized"
         ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
          Background="Transparent"
         AllowsTransparency="True"
         Title="" Height="450" Width="800">
@@ -24,7 +25,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Grid Background="Moccasin">
-                                        
+
                                         <ContentPresenter VerticalAlignment="Center" ></ContentPresenter>
                                     </Grid>
                                 </ControlTemplate>
@@ -36,7 +37,7 @@
                             <Setter.Value>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Grid Background="Moccasin">
-                                        
+
                                         <ContentPresenter VerticalAlignment="Center" ></ContentPresenter>
                                     </Grid>
                                 </ControlTemplate>
@@ -76,8 +77,38 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+            <Style x:Key="CartBtnStyle" TargetType="Button">
+                <Style.Triggers>
+                    <Trigger Property="IsMouseDirectlyOver" Value="True">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid Background="Transparent">
+                                        <Border BorderBrush="Brown" BorderThickness="3" CornerRadius="5"></Border>
+                                        <ContentPresenter TextBlock.Foreground="White" TextBlock.TextAlignment="Center" Margin="8" ></ContentPresenter>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Grid Background="Transparent">
+                                        <Border BorderBrush="Brown" BorderThickness="3" CornerRadius="5"></Border>
+                                        <ContentPresenter TextBlock.Foreground="White" TextBlock.TextAlignment="Center" Margin="8" ></ContentPresenter>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
-        
+
 
     </Window.Resources>
 
@@ -93,7 +124,7 @@
                     <TextBlock x:Name="txtCat1" Text="{Binding CatName}" DataContext="{Binding Categories}" FontWeight="Bold" HorizontalAlignment="Center" 
                                VerticalAlignment="Bottom"  FontSize="27" Background="Transparent" Height="auto" Foreground="Brown" />
                 </StackPanel>
-                
+
             </ToggleButton>
         </Border>
 
@@ -145,101 +176,104 @@
                     <RowDefinition Height="45"/>
                 </Grid.RowDefinitions>
                 <!--Section -1-->
-                <Border x:Name="sec1" Grid.Row="0" Grid.Column="0" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec1" Grid.Row="0" Grid.Column="0" Margin="30,20,30,10" BorderBrush="Transparent" BorderThickness="2"  CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec1" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem1"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel  Grid.Row="1" Grid.Column="0" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem1" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem1" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
+
+                <!--<TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" TextAlignment="Right" Text="Egg"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="35"/>-->
+
                 <!--Section -2-->
-                <Border x:Name="sec2" Grid.Row="0" Grid.Column="1" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec2" Grid.Row="0" Grid.Column="1" Margin="30,20,30,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec2" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem2"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel  Grid.Row="1" Grid.Column="1" Margin="7" HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem2" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem2" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
                 <!--Section -3-->
-                <Border x:Name="sec3" Grid.Row="0" Grid.Column="2" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec3" Grid.Row="0" Grid.Column="2" Margin="30,20,40,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec3" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem3"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel  Grid.Row="1" Grid.Column="2" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem3" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem3" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
                 <!--Section -4-->
-                <Border x:Name="sec4" Grid.Row="2" Grid.Column="0" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec4" Grid.Row="2" Grid.Column="0" Margin="30,20,30,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec4" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem4"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel  Grid.Row="3" Grid.Column="0" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem4" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem4" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
                 <!--Section -5-->
-                <Border x:Name="sec5" Grid.Row="2" Grid.Column="1" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec5" Grid.Row="2" Grid.Column="1" Margin="30,20,30,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec5" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem5"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel Grid.Row="3"  Grid.Column="1" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem5" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem5" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
                 <!--Section -6-->
-                <Border x:Name="sec6" Grid.Row="2" Grid.Column="2" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec6" Grid.Row="2" Grid.Column="2" Margin="30,20,40,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec6" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem6"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel Grid.Column="2" Grid.Row="3"  Margin="7" HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem6" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem6" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
                 <!--Section -7-->
-                <Border x:Name="sec7" Grid.Row="4" Grid.Column="0" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec7" Grid.Row="4" Grid.Column="0" Margin="30,20,30,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec7" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem7"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel Grid.Column="0" Grid.Row="5" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem7" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem7" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
                 <!--Section -8-->
-                <Border x:Name="sec8" Grid.Row="4" Grid.Column="1" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec8" Grid.Row="4" Grid.Column="1" Margin="30,20,30,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec8" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem8"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel Grid.Column="1" Grid.Row="5" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem8" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem8" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
                 <!--Section -9-->
-                <Border x:Name="sec9" Grid.Row="4" Grid.Column="2" Margin="10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
+                <Border x:Name="sec9" Grid.Row="4" Grid.Column="2" Margin="30,20,40,10" BorderBrush="Transparent" BorderThickness="2" CornerRadius="5" Background="Transparent">
                     <Button Style="{StaticResource SecBtnStyle}" Click="btnSec9" Background="Transparent" BorderBrush="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <Image x:Name="imgItem9"   Width="auto" Stretch="Fill"/>
 
                     </Button>
                 </Border>
                 <StackPanel Grid.Column="2" Grid.Row="5" Margin="7"  HorizontalAlignment="Center" VerticalAlignment="Center" >
-                    <TextBlock  x:Name="txtItem9" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="31"/>
+                    <TextBlock  x:Name="txtItem9" DataContext="{Binding Menus}" TextAlignment="Right" Text="{Binding ItemName}"  FontWeight="Bold" FontSize="30"  FontFamily="Calibri"  Height="37"/>
                 </StackPanel>
             </Grid>
-            
-            
+
+
         </ScrollViewer>
 
-           
+
         <!--menu-items display ends here-->
 
         <!--cart display starts here-->

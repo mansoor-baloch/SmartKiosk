@@ -46,7 +46,6 @@ namespace SmartKioskApp.Views
 
             imgUpdateCart.Source = ItemMenu.BitmaSourceFromByteArray(cartViewModel.myIcons[7].Icon);
 
-
         }
 
         private void btnCheckOut(object sender, RoutedEventArgs e)
@@ -54,7 +53,7 @@ namespace SmartKioskApp.Views
             try
             {
                 checkedOut = true;
-                this.Close();
+                this.Hide();
 
             }
             catch (Exception ex)
@@ -65,7 +64,7 @@ namespace SmartKioskApp.Views
 
         public void btnAddAnother(object sender, RoutedEventArgs e)
         {
-
+            checkedOut = false;
             addAnotherItem = true;
             this.Close();
 
@@ -80,6 +79,7 @@ namespace SmartKioskApp.Views
             {
                 OrderCanelled = true;
                 this.Close();
+                checkedOut = false;
 
             }
 

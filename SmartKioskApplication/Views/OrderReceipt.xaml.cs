@@ -35,7 +35,7 @@ namespace SmartKioskApp.Views
         private void StartCloseTimer()
         {
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(10d);
+            timer.Interval = TimeSpan.FromSeconds(8d);
             timer.Tick += TimerTick;
             timer.Start();
         }

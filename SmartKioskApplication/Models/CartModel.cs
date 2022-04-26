@@ -14,6 +14,11 @@ namespace SmartKioskApp.Models
     {
 
         public string name;
+        public string orderNo;
+        public string portion;
+        public int quantity;
+        public string unitPrice;
+        public string totalPrice;
 
         public string Name
         {
@@ -32,10 +37,6 @@ namespace SmartKioskApp.Models
             }
         }
 
-
-
-        public string portion;
-
         public string Portion
         {
             get
@@ -53,8 +54,7 @@ namespace SmartKioskApp.Models
             }
         }
 
-        public int quantity;
-
+        
         public int Quantity
         {
             get
@@ -72,8 +72,7 @@ namespace SmartKioskApp.Models
             }
         }
 
-        public string unitPrice;
-
+        
         public string UnitPrice
         {
             get
@@ -90,8 +89,7 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-        public string totalPrice;
-
+        
         public string TotalPrice
         {
             get
@@ -108,8 +106,6 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-
-        public string orderNo;
 
         public string OrderNo
         {

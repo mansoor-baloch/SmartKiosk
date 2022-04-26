@@ -13,8 +13,8 @@
     <Border CornerRadius="55" BorderBrush="Brown" BorderThickness="3.5" Background="White">
         <Grid >
 
-            <Label Content="Please Select Portion:" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"  
-                   HorizontalAlignment="Center" VerticalAlignment="Center"  FontWeight="Bold" FontSize="38" FontFamily="Candara"  />
+            <Label Content="Please Select Portion" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"  
+                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10" FontWeight="Black" FontSize="38"  />
 
             <Border  Grid.Row="0" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="Transparent">
                 <Button x:Name="Back" DataContext="{Binding myCart}" Click="btnBack" BorderBrush="Transparent" Background="Transparent" Margin="0,0,18,0">
@@ -44,7 +44,7 @@
 
             <!--quarter-->
 
-            <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Margin="15" Height="200" BorderBrush="SkyBlue" BorderThickness="2" CornerRadius="5" Background="Azure" >
+            <Border x:Name="secQuarter" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Margin="15" Height="200" BorderBrush="SkyBlue" BorderThickness="2" CornerRadius="5" Background="Azure" >
                 <Button Background="Transparent" BorderBrush="Transparent" Click="btnQuarter">
                     <StackPanel >
 
@@ -82,7 +82,7 @@
             <!--half-->
 
 
-            <Border Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Margin="15" Height="200" BorderBrush="SkyBlue" BorderThickness="2" CornerRadius="5" Background="Azure" >
+            <Border x:Name="secHalf" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Margin="15" Height="200" BorderBrush="SkyBlue" BorderThickness="2" CornerRadius="5" Background="Azure" >
                 <Button Background="Transparent" BorderBrush="Transparent" Click="btnMedium">
                     <StackPanel>
                         <TextBlock Grid.Column="2" Grid.Row="1" Text="HALF" FontWeight="Bold" Margin="0,0,0,25" FontSize="30" Foreground="Brown" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -117,7 +117,7 @@
             <!--standard-->
 
 
-            <Border Grid.Column="3" Grid.Row="1" Grid.RowSpan="2" Margin="15"  Height="200"  BorderBrush="SkyBlue" BorderThickness="2" CornerRadius="5" Background="Azure" >
+            <Border x:Name="secStandard" Grid.Column="3" Grid.Row="1" Grid.RowSpan="2" Margin="15"  Height="200"  BorderBrush="SkyBlue" BorderThickness="2" CornerRadius="5" Background="Azure" >
                 <Button Background="Transparent" BorderBrush="Transparent" Click="btnStandard">
                     <StackPanel>
                         <TextBlock  Text="STANDARD" FontWeight="Bold" FontSize="30" Foreground="Brown" Margin="0,0,0,25" HorizontalAlignment="Center" VerticalAlignment="Center"/>

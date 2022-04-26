@@ -46,23 +46,46 @@ namespace SmartKioskApp.ViewModels
             get;
             set;
         }
-        
+        public ObservableCollection<Payment> Payments
+        {
+            get;
+            set;
+        }
+
         public void LoadMenu(string CategoryName )
         {
+            LoadIcons();
             ObservableCollection<Menu> menu1 = new ObservableCollection<Menu>();
             conn = new SqlConnection(ConnectionString);
             conn.ConnectionString = ConnectionString;
             conn.Open();
             sql = "select ItemName, Category, PriceQP, PriceHP, PriceSP, ItemImage, IsActive, HasPortion from tblMenu " +
             "inner join tblCategory on tblMenu.Category = tblCategory.CategoryName " +
-            "where tblMenu.Category = '" + CategoryName + "' and IsActive = 1 ";
+            "where tblMenu.Category = '" + CategoryName + "' and IsActive = 1 and tblMenu.isAvailable = 1 ";
             cmd = new SqlCommand(sql, conn);
             reader = cmd.ExecuteReader();
-            while (reader.Read())
+            byte[] arr;
+            try
             {
-                byte[] arr = (byte[])(reader.GetValue(5));
-                menu1.Add(new Menu { ItemName = Convert.ToString(reader.GetValue(0)).Trim(), PriceQP = Convert.ToInt32(reader.GetValue(2)), PriceMP = Convert.ToInt32(reader.GetValue(3)), PriceSP = Convert.ToInt32(reader.GetValue(4)), ItemImage = arr, HasPortion = Convert.ToBoolean(reader.GetValue(7)) });
+                while (reader.Read())
+                {
+                    if (reader.GetValue(5) == DBNull.Value)
+                    {
+                        arr = myIcons[10].Icon;
+                    }
+                    else
+                    {
+                        arr = (byte[])(reader.GetValue(5));
+                    }
+
+                    menu1.Add(new Menu { ItemName = Convert.ToString(reader.GetValue(0)).Trim(), PriceQP = Convert.ToInt32(reader.GetValue(2)), PriceMP = Convert.ToInt32(reader.GetValue(3)), PriceSP = Convert.ToInt32(reader.GetValue(4)), ItemImage = arr, HasPortion = Convert.ToBoolean(reader.GetValue(7)) });
+                }
             }
+            catch (Exception ex)
+            {
+
+            }
+            
             reader.Close();
             cmd.Dispose();
             conn.Close();
@@ -71,6 +94,36 @@ namespace SmartKioskApp.ViewModels
 
             CountItems(CategoryName);
         }
+        public void LoadPaymentDetails(string OrderNo)
+        {
+            ObservableCollection<Payment> payments = new ObservableCollection<Payment>();
+            try
+            {
+                conn = new SqlConnection(ConnectionString);
+                conn.ConnectionString = ConnectionString;
+                conn.Open();
+                sql = "select  cashType, transactionAmount,   transactionDirection from tblSaleTransaction " +
+                "where OrderNo = '" + OrderNo + "' ";
+                cmd = new SqlCommand(sql, conn);
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    payments.Add(new Payment { PaymentType = reader.GetString(0), TransactionAmount = reader.GetInt32(1),  TransactionDirection = reader.GetString(2) });
+                }
+                reader.Close();
+                cmd.Dispose();
+                conn.Close();
+
+                Payments = payments;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            
+
+        }
+
         public void CountItems(string CatName)
         {
             try
@@ -80,7 +133,7 @@ namespace SmartKioskApp.ViewModels
                 conn.Open();
 
                 //Query for getting Count
-                string QueryCnt = "select count(*) as ItemsCount from tblMenu where category = '" + CatName + "' ";
+                string QueryCnt = "select count(*) as ItemsCount from tblMenu where category = '" + CatName + "' and tblMenu.isAvailable = 1  ";
 
                 //Execute Queries and save results into variables
                 SqlCommand CmdCnt = conn.CreateCommand();
@@ -126,7 +179,7 @@ namespace SmartKioskApp.ViewModels
             conn = new SqlConnection(ConnectionString);
             conn.ConnectionString = ConnectionString;
             conn.Open();
-            sql = "select * from tblcategory where isactive = 1";
+            sql = "select * from tblcategory where isactive = 1 order by CategoryName desc";
             cmd = new SqlCommand(sql, conn);
             reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -152,9 +205,10 @@ namespace SmartKioskApp.ViewModels
             sql = "select * from tbl_icons ";
             cmd = new SqlCommand(sql, conn);
             reader = cmd.ExecuteReader();
+            byte[] arr;
             while (reader.Read())
             {
-                byte[] arr = (byte[])(reader.GetValue(2));
+                arr = (byte[])(reader.GetValue(2));
                 icons.Add(new Icons { Description = Convert.ToString(reader.GetValue(1)).Trim(), Icon = arr });
             }
             reader.Close();

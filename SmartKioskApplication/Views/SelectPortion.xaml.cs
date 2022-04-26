@@ -33,14 +33,41 @@ namespace SmartKioskApp.Views
                 menuViewModelObject.LoadCategory();
                 menuViewModelObject.LoadIcons();
                 backIcon.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[6].Icon);
-
+                
                 txtQuarter.Visibility = Visibility.Visible;
                 txtHalf.Visibility = Visibility.Visible;
                 txtStandard.Visibility = Visibility.Visible;
+                secHalf.Visibility = Visibility.Visible;
+                secQuarter.Visibility = Visibility.Visible;
+                priceQuarter.Visibility = Visibility.Visible;
+                priceMedium.Visibility = Visibility.Visible;
+                priceStandard.Visibility = Visibility.Visible;
+
+                if (!ItemMenu.HasQuarter )
+                {
+                    secQuarter.Visibility = Visibility.Hidden;
+                    txtQuarter.Visibility = Visibility.Hidden;
+                    priceQuarter.Visibility = Visibility.Hidden;
+                    secHalf.Margin = new Thickness(-180, 0, 100, 0);
+                    secHalf.Width = 250;
+                    txtHalf.Margin = new Thickness(-80, 0, 100, 0);
+                    priceMedium.Margin = new Thickness(-140, 0, 100, 0);
+
+                    secStandard.Margin = new Thickness(-80, 0, 30, 0);
+                    secStandard.Width = 250;
+                    txtStandard.Margin = new Thickness(-3, 0, 0, 0);
+                    priceStandard.Margin = new Thickness(-70, 0, 0, 0);
+
+                }
+                if (!ItemMenu.HasHalf)
+                {
+                    secHalf.Visibility = Visibility.Hidden;
+                    txtHalf.Visibility = Visibility.Hidden;
+                    priceMedium.Visibility = Visibility.Hidden;
+                }
                 imgQuarter.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[2].Icon);
                 imgHalf.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[3].Icon);
                 imgStandard.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[4].Icon);
-
 
                 StartCloseTimer();
 

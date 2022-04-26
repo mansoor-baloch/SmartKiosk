@@ -14,7 +14,11 @@ namespace SmartKioskApp.Models
     {
 
         public string orderNo;
-
+        public int dueAmount;
+        public int insertedAmount;
+        public int remainingAmount;
+        public int ticketNumber;
+        public string OrderDateTime { get; set; }
         public string OrderNo
         {
             get
@@ -31,8 +35,6 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-        public int dueAmount;
-
         public int DueAmount
         {
             get
@@ -49,8 +51,7 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-        public int insertedAmount;
-
+        
         public int InsertedAmount
         {
             get
@@ -67,8 +68,7 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-        public int remainingAmount;
-
+        
         public int RemainingAmount
         {
             get
@@ -85,8 +85,7 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-        public int ticketNumber;
-
+        
         public int TicketNumber
         {
             get

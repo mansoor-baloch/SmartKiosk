@@ -43,14 +43,7 @@
                                        FontWeight="SemiBold"  Width="auto" VerticalAlignment="Center" Text="from the counter."></TextBlock>
             </StackPanel>
 
-            <!--Incomplete payment -->
-            <StackPanel x:Name="txtInstruct4" Visibility="Hidden" Orientation="Horizontal" Grid.Row="6" Grid.ColumnSpan="3" HorizontalAlignment="Center" >
-
-                <TextBlock FontSize="28" TextAlignment="Left" Background="Transparent" FontStyle="Normal" HorizontalAlignment="Left" 
-                                       FontWeight="SemiBold"  Width="auto" VerticalAlignment="Center" Text="Please pay the pending amount of Rs. "></TextBlock>
-                <TextBlock FontSize="28" TextAlignment="Left" VerticalAlignment="Center" Foreground="Brown" Background="Transparent" FontStyle="Normal" Margin="3,0,0,0"  
-                                       FontWeight="SemiBold"  Width="auto" x:Name="txtPendingAmount" Text="{Binding RemainingAmount}" DataContext="{Binding Orders}"></TextBlock>
-            </StackPanel>
+            
 
                 <TextBlock x:Name="txtInstruct" Visibility="Hidden"  Grid.Row="7" Grid.ColumnSpan="3" 
                            FontSize="28" TextAlignment="Left" Background="Transparent" FontStyle="Normal" HorizontalAlignment="Left" 

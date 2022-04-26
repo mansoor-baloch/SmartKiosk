@@ -12,12 +12,16 @@ using System.Threading.Tasks;
 using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Net;
+using System.IO;
 
 namespace SmartKioskApp
 {
     public static class ReadWrite
     {
         public const string URL = "https://apibaflnotification.vendingc.com/api/Notification/Find_Notification";
+        public const string url = "http://203.135.63.93/api/KioskMangement/PostingOrderSummary";
+
         //public static string urlParameters = "?QR_Gen_Time=2022-03-29 &PAN=533338625094994";
         public static string urlParameters = "";
         public static decimal PaidAmount;
@@ -146,6 +150,37 @@ namespace SmartKioskApp
             }
             // HTTP GET.  
             
+        }
+        public static void PostDataToLDB(string serialized)
+        {
+            try
+            {
+                var httpRequest = (HttpWebRequest)WebRequest.Create(url);
+                httpRequest.Method = "POST";
+
+                httpRequest.Accept = "application/json";
+                httpRequest.ContentType = "application/json";
+
+                using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
+                {
+                    streamWriter.Write(serialized);
+
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+
+                var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    var result = streamReader.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
         }
     }
     public  class myDataObject
