@@ -76,6 +76,14 @@
                     Scan the QR code to process your payment<LineBreak/> for completing  your order.
                 </TextBlock>
             </StackPanel>
+            <StackPanel x:Name="txtPayInstruct3" Grid.Row="2" Grid.ColumnSpan="4" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock  FontSize="23" FontWeight="Black" FontFamily="Times New Roman" TextAlignment="Center">
+                    Tap, insert or swipe your Visa or Master card<LineBreak/>  to process your payment for completing<LineBreak/> your order.
+                </TextBlock>
+            </StackPanel>
+            <Image x:Name="imgCardsAccepted" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Visibility="Hidden" Margin="60,30,60,60" VerticalAlignment="Center" HorizontalAlignment="Center">
+
+            </Image>
 
             <Image x:Name="imgQRMethods" Grid.Row="2" Grid.RowSpan="2" Height="85" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" Visibility="Visible">
                 
@@ -124,7 +132,7 @@
                 </StackPanel>
             </StackPanel>
 
-            <Border x:Name="PaymentQR" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2"   HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
+            <Border x:Name="PaymentQR" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Hidden"  HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
                 <Button Grid.Column="0" Height="80" Style="{StaticResource stylePayBtn}"  BorderBrush="Transparent" Background="Azure" Click="btnPayWithQR" >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Image x:Name="imgQRPay" Margin="3" />
@@ -136,13 +144,14 @@
                                        FontWeight="SemiBold"  Width="auto" Foreground="Brown" VerticalAlignment="Center" Text="Rs. "></TextBlock>
                                 <TextBlock FontSize="28" TextAlignment="Left" Background="Transparent" FontStyle="Normal" Margin="5,0,0,0" Foreground="Brown"
                                        FontWeight="SemiBold"  Width="auto" x:Name="txtDueAmount" ></TextBlock>
+                                <TextBlock HorizontalAlignment="Right" Margin="22,0,0,0" VerticalAlignment="Center" Text="(5% tax included)" FontSize="15" FontWeight="Bold"></TextBlock>
                             </StackPanel>
 
                         </StackPanel>
                     </StackPanel>
                 </Button>
             </Border>
-            <Border x:Name="PaymentBar" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
+            <Border x:Name="PaymentBar" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="SkyBlue" BorderThickness="2.5" >
                 <Button Grid.Column="0" Height="80" Style="{StaticResource stylePayBtn}" Width="auto" BorderBrush="Transparent" Background="Azure" Click="btnPayWithCash" >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Image x:Name="imgCashPay" Margin="3" />
@@ -160,7 +169,25 @@
                     </StackPanel>
                 </Button>
             </Border>
+            <Border x:Name="PaymentCard" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
+                <Button Grid.Column="0" Height="80" Style="{StaticResource stylePayBtn}" Width="auto" BorderBrush="Transparent" Background="Azure" Click="btnPayWithCard" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Image x:Name="imgCardPay" Margin="3" />
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="" FontSize="28" TextAlignment="Left" Background="Transparent" FontStyle="Normal" 
+                               Margin="10,0,10,0" FontWeight="SemiBold" Width="auto">PAY WITH CARD</TextBlock>
+                            <StackPanel Orientation="Horizontal" Margin="10,0,10,0">
+                                <TextBlock FontSize="28" TextAlignment="Left" Background="Transparent" FontStyle="Normal" HorizontalAlignment="Left"
+                                       FontWeight="SemiBold"  Width="auto" VerticalAlignment="Center" Foreground="Brown" Text="Rs. "></TextBlock>
+                                <TextBlock FontSize="28" TextAlignment="Left" Background="Transparent" FontStyle="Normal" Margin="5,0,0,0" 
+                                       FontWeight="SemiBold"  Width="auto" x:Name="txtTotalAmnt" Foreground="Brown" Text="{Binding DueAmount}" DataContext="{Binding Orders}"></TextBlock>
+                                <TextBlock HorizontalAlignment="Right" Margin="22,0,0,0" VerticalAlignment="Center" Text="(5% tax included)" FontSize="15" FontWeight="Bold"></TextBlock>
+                            </StackPanel>
 
+                        </StackPanel>
+                    </StackPanel>
+                </Button>
+            </Border>
 
 
             <Grid.ColumnDefinitions>

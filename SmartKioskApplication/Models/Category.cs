@@ -13,6 +13,7 @@ namespace SmartKioskApp.Models
     public class Category : INotifyPropertyChanged
     {
         public string catName;
+        public byte[] catIcon;
 
         public string CatName
         {
@@ -31,8 +32,7 @@ namespace SmartKioskApp.Models
             }
         }
 
-        public byte[] catIcon;
-
+        
         public byte[] CatIcon
         {
             get { return catIcon; }

@@ -20,11 +20,13 @@ namespace SmartKioskApp.ViewModels
                 Orders orders1 = new Orders();
                 orders1.OrderNo = Views.ItemMenu.orders[0].OrderNo;
                 orders1.TicketNo = Views.ItemMenu.orders[0].TicketNumber;
-                orders1.purchaseAmount = Views.ItemMenu.orders[0].DueAmount;
+                orders1.purchaseAmount = Views.ItemMenu.CashDueAmount;
                 orders1.PaidAmount = Views.ItemMenu.orders[0].InsertedAmount;
                 orders1.RemainingAmount = Views.ItemMenu.orders[0].RemainingAmount;
                 orders1.machineId = "PDC-1";
                 orders1.OrderDateTime = Views.ItemMenu.OrderDateTime;
+                orders1.isCompleted = Views.ItemMenu.PaymentCompleted;
+                orders1.paymentType = Views.CheckOut.PaymentMethod;
                 
                 for (int i = 0; i < Views.ItemMenu.carts.Count; i++)
                 {
@@ -77,6 +79,8 @@ namespace SmartKioskApp.ViewModels
         public bool isCompleted { get; set; }
         public string completedDateTime { get; set; }
         public string completedBy { get; set; }
+        public string paymentType { get; set; }
+
         public List<CartDetails> tblOrderDetails { get; set; }
         public List<PaymentDetails> tblPaymentDetails { get; set; }
 
@@ -88,8 +92,8 @@ namespace SmartKioskApp.ViewModels
         public string OrderNo { get; set; }
         public string Portion { get; set; }
         public int Quantity { get; set; }
-        public string UnitPrice { get; set; }
-        public string TotalPrice { get; set; }
+        public string Price { get; set; }
+        public string DateTime { get; set; }
     }
     public class PaymentDetails
     {

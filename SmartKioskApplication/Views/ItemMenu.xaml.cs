@@ -21,6 +21,7 @@ using System.Windows.Shapes;
 using SmartKioskApp.ViewModels;
 using System.Printing;
 using PrinterUtility;
+using Path = System.IO.Path;
 
 namespace SmartKioskApp.Views
 {
@@ -41,6 +42,7 @@ namespace SmartKioskApp.Views
         public static string OrderNo = "";
         public static string OrderDateTime;
         public static int QRdueAmount;
+        public static int CashDueAmount;
 
         public static bool PaymentCompleted = false;
         public static bool HasQuarter = false;
@@ -60,20 +62,20 @@ namespace SmartKioskApp.Views
         {
             try
             {
-
                 InitializeComponent();
                 tBtnCat1.IsChecked = true;
                 tBtnCat2.IsChecked = false;
                 tBtnCat3.IsChecked = false;
-                tBtnCat3.Opacity = 0.6;
-                tBtnCat2.Opacity = 0.6;
+                tBtnCat3.Opacity = 0.4;
+                tBtnCat2.Opacity = 0.4;
                 tBtnCat1.Opacity = 2;
 
                 menuViewModel.LoadCategory();
                 menuViewModel.LoadMenu(menuViewModel.Categories[0].CatName);
-                menuViewModel.LoadIcons();
 
-                imgCart.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[1].Icon);
+                var uri = new Uri("pack://application:,,,/Icons/cart.jpg");
+                imgCart.Source = new BitmapImage(uri);
+
 
                 menuViewModel.CountCategories();
                 DisplayCategories();
@@ -85,10 +87,6 @@ namespace SmartKioskApp.Views
 
             }
         }
-        /// Create a Value Converter to disable the Up & Down Arrow buttons of the scrollbar
-        /// when the Thumb reaches the minimum & maximum position on the scroll track.
-        /// </summary>
-
         
         public static BitmapSource BitmaSourceFromByteArray(byte[] buffer)
         {
@@ -112,10 +110,12 @@ namespace SmartKioskApp.Views
 
             try
             {
+                scrol.ScrollToTop();
+                scrol.UpdateLayout();
                 if (tBtnCat1.IsChecked == true)
                 {
-                    tBtnCat3.Opacity = 0.6;
-                    tBtnCat2.Opacity = 0.6;
+                    tBtnCat3.Opacity = 0.4;
+                    tBtnCat2.Opacity = 0.4;
                     tBtnCat1.Opacity = 2;
                     tBtnCat2.IsChecked = false;
                     tBtnCat3.IsChecked = false;
@@ -124,8 +124,8 @@ namespace SmartKioskApp.Views
                 if (tBtnCat1.IsChecked == false)
                 {
                     tBtnCat1.IsChecked = true;
-                    tBtnCat3.Opacity = 0.6;
-                    tBtnCat2.Opacity = 0.6;
+                    tBtnCat3.Opacity = 0.4;
+                    tBtnCat2.Opacity = 0.4;
                     tBtnCat1.Opacity = 2;
                     tBtnCat2.IsChecked = false;
                     tBtnCat3.IsChecked = false;
@@ -133,9 +133,9 @@ namespace SmartKioskApp.Views
 
                 menuViewModel.LoadCategory();
                 menuViewModel.LoadMenu(menuViewModel.Categories[0].CatName);
-                menuViewModel.LoadIcons();
 
-                imgCart.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[1].Icon);
+                var uri = new Uri("pack://application:,,,/Icons/cart.jpg");
+                imgCart.Source = new BitmapImage(uri);
 
                 menuViewModel.CountCategories();
                 DisplayCategories();
@@ -155,10 +155,12 @@ namespace SmartKioskApp.Views
 
             try
             {
+                scrol.ScrollToTop();
+                scrol.UpdateLayout();
                 if (tBtnCat2.IsChecked == true)
                 {
-                    tBtnCat3.Opacity = 0.6;
-                    tBtnCat1.Opacity = 0.6;
+                    tBtnCat3.Opacity = 0.4;
+                    tBtnCat1.Opacity = 0.4;
                     tBtnCat2.Opacity = 2;
                     tBtnCat1.IsChecked = false;
                     tBtnCat3.IsChecked = false;
@@ -166,8 +168,8 @@ namespace SmartKioskApp.Views
                 if (tBtnCat2.IsChecked == false)
                 {
                     tBtnCat2.IsChecked = true;
-                    tBtnCat3.Opacity = 0.6;
-                    tBtnCat1.Opacity = 0.6;
+                    tBtnCat3.Opacity = 0.4;
+                    tBtnCat1.Opacity = 0.4;
                     tBtnCat2.Opacity = 2;
                     tBtnCat1.IsChecked = false;
                     tBtnCat3.IsChecked = false;
@@ -175,10 +177,9 @@ namespace SmartKioskApp.Views
 
                 menuViewModel.LoadCategory();
                 menuViewModel.LoadMenu(menuViewModel.Categories[1].CatName);
-                menuViewModel.LoadIcons();
 
-
-                imgCart.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[1].Icon);
+                var uri = new Uri("pack://application:,,,/Icons/cart.jpg");
+                imgCart.Source = new BitmapImage(uri);
                 menuViewModel.CountCategories();
                 DisplayCategories();
 
@@ -194,12 +195,12 @@ namespace SmartKioskApp.Views
         {
             try
             {
-
-
+                scrol.ScrollToTop();
+                scrol.UpdateLayout();
                 if (tBtnCat3.IsChecked == true)
                 {
-                    tBtnCat1.Opacity = 0.6;
-                    tBtnCat2.Opacity = 0.6;
+                    tBtnCat1.Opacity = 0.4;
+                    tBtnCat2.Opacity = 0.4;
                     tBtnCat3.Opacity = 2;
                     tBtnCat2.IsChecked = false;
                     tBtnCat1.IsChecked = false;
@@ -207,8 +208,8 @@ namespace SmartKioskApp.Views
                 if (tBtnCat3.IsChecked == false)
                 {
                     tBtnCat3.IsChecked = true;
-                    tBtnCat1.Opacity = 0.6;
-                    tBtnCat2.Opacity = 0.6;
+                    tBtnCat1.Opacity = 0.4;
+                    tBtnCat2.Opacity = 0.4;
                     tBtnCat3.Opacity = 2;
                     tBtnCat2.IsChecked = false;
                     tBtnCat1.IsChecked = false;
@@ -217,10 +218,9 @@ namespace SmartKioskApp.Views
 
                 menuViewModel.LoadCategory();
                 menuViewModel.LoadMenu(menuViewModel.Categories[2].CatName);
-                menuViewModel.LoadIcons();
 
-
-                imgCart.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[1].Icon);
+                var uri = new Uri("pack://application:,,,/Icons/cart.jpg");
+                imgCart.Source = new BitmapImage(uri);
                 menuViewModel.CountCategories();
 
                 DisplayCategories();
@@ -311,6 +311,7 @@ namespace SmartKioskApp.Views
                         checkOut.txtTotalAmount1.DataContext = orders[0];
                         QRdueAmount = orders[0].DueAmount + Convert.ToInt32(orders[0].DueAmount * 0.05);
                         checkOut.txtDueAmount.Text = QRdueAmount.ToString();
+                        checkOut.txtTotalAmnt.Text = QRdueAmount.ToString();
                         checkOut.txtCreditAmount.DataContext = orders[0];
                         checkOut.txtQRTotal.Text = QRdueAmount.ToString();
 
@@ -333,6 +334,7 @@ namespace SmartKioskApp.Views
 
                             ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
                             PrintReceipt();
+                            CashDueAmount = orders[0].DueAmount;
                             CancelOrder();
                             HideDisplayButtons();
                             OrderReceipt orderReceipt = new OrderReceipt();
@@ -365,11 +367,35 @@ namespace SmartKioskApp.Views
                             orders[0].DueAmount = 0;
                             PaymentCompleted = false;
                         }
+                        if (checkOut.CardPayConfirmed)
+                        {
+                            PaymentCompleted = true;
+                            ItemMenu.orders[0].TicketNumber = CheckOut.GenNewTicketNo();
+                            ItemMenu.orders[0].InsertedAmount = Convert.ToInt32(ReadWrite.Read(Global.Actions.AddToAmount.ToString()));
+                            ItemMenu.orders[0].DueAmount = QRdueAmount;
+                            ItemMenu.InsertOrdersTable();
+                            InsertCartTable();
+
+                            ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
+                            PostData.CreateJSON();
+                            OrderReceipt orderReceipt = new OrderReceipt();
+                            orderReceipt.txtTicketNo.DataContext = orders[0];
+                            PrintReceipt();
+                            CancelOrder();
+                            HideDisplayButtons();
+                            orderReceipt.ShowDialog();
+                            checkOut.CloseThisScreen = false;
+                            orders[0].DueAmount = 0;
+                            PaymentCompleted = false;
+                        }
                         if (checkOut.CloseThisScreen)
                         {
+                            PaymentCompleted = false;
                             ItemMenu.orders[0].InsertedAmount = Convert.ToInt32(ReadWrite.Read(Global.Actions.AddToAmount.ToString()));
                             checkOut.txtCreditAmount.DataContext = orders[0];
                             ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
+
+                            CashDueAmount = orders[0].DueAmount;
                             if (ItemMenu.orders[0].InsertedAmount > 0)
                             {
 
@@ -413,6 +439,8 @@ namespace SmartKioskApp.Views
                     {
                         orders[0].DueAmount = 0;
                         checkOut.Close();
+                        ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
+                        
                     }
                     if (previewOrder.OrderCanelled)
                     {
@@ -516,7 +544,7 @@ namespace SmartKioskApp.Views
         bool itemExists = false;
         public void btnSec1(object sender, RoutedEventArgs e)
         {
-            
+            tBtnSec1.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -542,6 +570,7 @@ namespace SmartKioskApp.Views
 
         private void btnSec2(object sender, RoutedEventArgs e)
         {
+            tBtnSec2.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -567,6 +596,7 @@ namespace SmartKioskApp.Views
 
         private void btnSec3(object sender, RoutedEventArgs e)
         {
+            tBtnSec3.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -592,6 +622,7 @@ namespace SmartKioskApp.Views
         MenuViewModel cartViewModel = new MenuViewModel();
         private void btnSec4(object sender, RoutedEventArgs e)
         {
+            tBtnSec4.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -617,6 +648,7 @@ namespace SmartKioskApp.Views
 
         private void btnSec5(object sender, RoutedEventArgs e)
         {
+            tBtnSec5.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -642,6 +674,7 @@ namespace SmartKioskApp.Views
 
         private void btnSec6(object sender, RoutedEventArgs e)
         {
+            tBtnSec6.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -666,6 +699,7 @@ namespace SmartKioskApp.Views
         }
         private void btnSec7(object sender, RoutedEventArgs e)
         {
+            tBtnSec7.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -690,6 +724,7 @@ namespace SmartKioskApp.Views
         }
         private void btnSec8(object sender, RoutedEventArgs e)
         {
+            tBtnSec8.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -715,6 +750,7 @@ namespace SmartKioskApp.Views
 
         private void btnSec9(object sender, RoutedEventArgs e)
         {
+            tBtnSec9.IsChecked = false;
             HasPortion = false;
             HasQuarter = true;
             HasHalf = true;
@@ -1106,6 +1142,7 @@ namespace SmartKioskApp.Views
                 txtItem4.DataContext = menuViewModel.Menus[3];
                 txtItem5.DataContext = menuViewModel.Menus[4];
                 txtItem6.DataContext = menuViewModel.Menus[5];
+                //txtPrice1.DataContext = menuViewModel.Menus[0];
                 imgItem1.Source = BitmaSourceFromByteArray(menuViewModel.Menus[0].ItemImage);
                 imgItem2.Source = BitmaSourceFromByteArray(menuViewModel.Menus[1].ItemImage);
                 imgItem3.Source = BitmaSourceFromByteArray(menuViewModel.Menus[2].ItemImage);
@@ -1297,7 +1334,8 @@ namespace SmartKioskApp.Views
         {
             MenuViewModel menuViewModel = new MenuViewModel();
             menuViewModel.LoadCategory();
-            menuViewModel.LoadIcons();
+
+            var uri = new Uri("pack://application:,,,/Icons/Editing-Delete-icon.png");
             try
             {
                 int CartCount = carts.Count();
@@ -1307,7 +1345,7 @@ namespace SmartKioskApp.Views
                     {
 
                         cartItem1.DataContext = carts[i];
-                        delIcon1.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon1.Source = new BitmapImage(uri);
                         btnIncDec1.Visibility = Visibility.Visible;
                         Quantity1.DataContext = carts[i];
                         txtPortion1.DataContext = carts[i];
@@ -1321,7 +1359,7 @@ namespace SmartKioskApp.Views
                     else if (i == 1)
                     {
                         cartItem2.DataContext = carts[i];
-                        delIcon2.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon2.Source = new BitmapImage(uri);
                         btnIncDec2.Visibility = Visibility.Visible;
                         Quantity2.DataContext = carts[i];
                         txtPortion2.DataContext = carts[i];
@@ -1335,7 +1373,7 @@ namespace SmartKioskApp.Views
                     else if (i == 2)
                     {
                         cartItem3.DataContext = carts[i];
-                        delIcon3.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon3.Source = new BitmapImage(uri);
                         Quantity3.DataContext = carts[i];
                         txtPortion3.DataContext = carts[i];
 
@@ -1349,7 +1387,7 @@ namespace SmartKioskApp.Views
                     else if (i == 3)
                     {
                         cartItem4.DataContext = carts[i];
-                        delIcon4.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon4.Source = new BitmapImage(uri);
                         btnIncDec4.Visibility = Visibility.Visible;
                         Quantity4.DataContext = carts[i];
                         txtPortion4.DataContext = carts[i];
@@ -1364,7 +1402,7 @@ namespace SmartKioskApp.Views
                     else if (i == 4)
                     {
                         cartItem5.DataContext = carts[i];
-                        delIcon5.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon5.Source = new BitmapImage(uri);
                         btnIncDec5.Visibility = Visibility.Visible;
                         Quantity5.DataContext = carts[i];
                         txtPortion5.DataContext = carts[i];
@@ -1379,7 +1417,7 @@ namespace SmartKioskApp.Views
                     else if (i == 5)
                     {
                         cartItem6.DataContext = carts[i];
-                        delIcon6.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon6.Source = new BitmapImage(uri);
                         btnIncDec6.Visibility = Visibility.Visible;
                         Quantity6.DataContext = carts[i];
                         txtPortion6.DataContext = carts[i];
@@ -1394,7 +1432,7 @@ namespace SmartKioskApp.Views
                     else if (i == 6)
                     {
                         cartItem7.DataContext = carts[i];
-                        delIcon7.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon7.Source = new BitmapImage(uri);
                         btnIncDec7.Visibility = Visibility.Visible;
                         Quantity7.DataContext = carts[i];
                         txtPortion7.DataContext = carts[i];
@@ -1409,7 +1447,7 @@ namespace SmartKioskApp.Views
                     else if (i == 7)
                     {
                         cartItem8.DataContext = carts[i];
-                        delIcon8.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                        delIcon8.Source = new BitmapImage(uri);
                         btnIncDec8.Visibility = Visibility.Visible;
                         Quantity8.DataContext = carts[i];
                         txtPortion8.DataContext = carts[i];
@@ -1435,7 +1473,8 @@ namespace SmartKioskApp.Views
         {
             MenuViewModel menuViewModel = new MenuViewModel();
             menuViewModel.LoadCategory();
-            menuViewModel.LoadIcons();
+
+            var uri = new Uri("pack://application:,,,/Icons/Editing-Delete-icon.png");
             try
             {
                 int CartCount = carts.Count();
@@ -1461,7 +1500,7 @@ namespace SmartKioskApp.Views
                     {
                         case 0:
                             cartItem1.DataContext = carts[i];
-                            delIcon1.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon1.Source = new BitmapImage(uri);
                             Del1.Visibility = Visibility.Visible;
                             btnIncDec1.Visibility = Visibility.Visible;
                             Quantity1.DataContext = carts[i];
@@ -1479,7 +1518,7 @@ namespace SmartKioskApp.Views
                             break;
                         case 1:
                             cartItem2.DataContext = carts[i];
-                            delIcon2.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon2.Source = new BitmapImage(uri);
                             btnIncDec2.Visibility = Visibility.Visible;
                             Del2.Visibility = Visibility.Visible;
                             Quantity2.DataContext = carts[i];
@@ -1497,7 +1536,7 @@ namespace SmartKioskApp.Views
                             break;
                         case 2:
                             cartItem3.DataContext = carts[i];
-                            delIcon3.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon3.Source = new BitmapImage(uri);
                             btnIncDec3.Visibility = Visibility.Visible;
                             Del3.Visibility = Visibility.Visible;
                             Quantity3.DataContext = carts[i];
@@ -1515,7 +1554,7 @@ namespace SmartKioskApp.Views
                             break;
                         case 3:
                             cartItem4.DataContext = carts[i];
-                            delIcon4.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon4.Source = new BitmapImage(uri);
                             btnIncDec4.Visibility = Visibility.Visible;
                             Del4.Visibility = Visibility.Visible;
                             Quantity4.DataContext = carts[i];
@@ -1533,7 +1572,7 @@ namespace SmartKioskApp.Views
                             break;
                         case 4:
                             cartItem5.DataContext = carts[i];
-                            delIcon5.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon5.Source = new BitmapImage(uri);
                             btnIncDec5.Visibility = Visibility.Visible;
                             Del5.Visibility = Visibility.Visible;
                             Quantity5.DataContext = carts[i];
@@ -1551,7 +1590,7 @@ namespace SmartKioskApp.Views
                             break;
                         case 5:
                             cartItem6.DataContext = carts[i];
-                            delIcon6.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon6.Source = new BitmapImage(uri);
                             btnIncDec6.Visibility = Visibility.Visible;
                             Del6.Visibility = Visibility.Visible;
                             Quantity6.DataContext = carts[i];
@@ -1569,7 +1608,7 @@ namespace SmartKioskApp.Views
                             break;
                         case 6:
                             cartItem7.DataContext = carts[i];
-                            delIcon7.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon7.Source = new BitmapImage(uri);
                             btnIncDec7.Visibility = Visibility.Visible;
                             Del7.Visibility = Visibility.Visible;
                             Quantity7.DataContext = carts[i];
@@ -1587,7 +1626,7 @@ namespace SmartKioskApp.Views
                             break;
                         case 7:
                             cartItem8.DataContext = carts[i];
-                            delIcon8.Source = BitmaSourceFromByteArray(menuViewModel.myIcons[0].Icon);
+                            delIcon8.Source = new BitmapImage(uri);
                             btnIncDec8.Visibility = Visibility.Visible;
                             Del8.Visibility = Visibility.Visible;
                             Quantity8.DataContext = carts[i];

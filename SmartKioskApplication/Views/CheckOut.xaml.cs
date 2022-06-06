@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -42,6 +43,7 @@ namespace SmartKioskApp.Views
         public bool IsPaymentCancelled = false;
         string dateTime = "";
         public  bool QRPayConfirmed = false;
+        public bool CardPayConfirmed = false;
 
         SqlCommand cmd = null;
         private string sql = null;
@@ -53,8 +55,11 @@ namespace SmartKioskApp.Views
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
         DispatcherTimer dispatcherTimerQR = new DispatcherTimer();
         DispatcherTimer screenTimer = new DispatcherTimer();
-
+        DispatcherTimer dispatcherTimerCard = new DispatcherTimer();
         private readonly DispatcherTimer timer = new DispatcherTimer();
+
+        SerialPort _serialPort = new SerialPort();
+
         private int lastDay;
         public CheckOut()
         {
@@ -62,8 +67,9 @@ namespace SmartKioskApp.Views
 
             MenuViewModel menuViewModel = new MenuViewModel();
             menuViewModel.LoadCategory();
-            menuViewModel.LoadIcons();
-            backIcon.Source = ItemMenu.BitmaSourceFromByteArray(menuViewModel.myIcons[6].Icon);
+
+            var uri = new Uri("pack://application:,,,/Icons/back.png");
+            backIcon.Source = new BitmapImage(uri);
 
             Back.Visibility = Visibility.Visible;
             DueAmountBar.Visibility = Visibility.Hidden;
@@ -72,13 +78,30 @@ namespace SmartKioskApp.Views
             txtInstructNotes.Visibility = Visibility.Hidden;
             imgQRMethods.Visibility = Visibility.Hidden;
             txtQRTotal.Visibility = Visibility.Hidden;
-            imgCashPay.Source = ItemMenu.BitmaSourceFromByteArray(menuViewModel.myIcons[5].Icon);
-            imgQRPay.Source = ItemMenu.BitmaSourceFromByteArray(menuViewModel.myIcons[9].Icon);
-            imgNotesAccepted.Source = ItemMenu.BitmaSourceFromByteArray(menuViewModel.myIcons[11].Icon);
-            imgQRMethods.Source = ItemMenu.BitmaSourceFromByteArray(menuViewModel.myIcons[12].Icon);
+            imgCardsAccepted.Visibility = Visibility.Hidden;
 
+            var uri1 = new Uri("pack://application:,,,/Icons/cash pay.jpg");
+            imgCashPay.Source = new BitmapImage(uri1);
+
+            var uri2 = new Uri("pack://application:,,,/Icons/qr pay.png");
+            imgQRPay.Source = new BitmapImage(uri2);
+
+            var uri3 = new Uri("pack://application:,,,/Icons/Cash NOTES.png");
+            imgNotesAccepted.Source = new BitmapImage(uri3);
+
+            var uri4 = new Uri("pack://application:,,,/Icons/QR payment methods.png");
+            imgQRMethods.Source = new BitmapImage(uri4);
+
+            var uri5 = new Uri("pack://application:,,,/Icons/card pay.png");
+            imgCardPay.Source = new BitmapImage(uri5);
+
+            var uri6 = new Uri("pack://application:,,,/Icons/card payment methods.png");
+            imgCardsAccepted.Source = new BitmapImage(uri6);
+
+
+           
             screenTimer.Tick += new EventHandler(ScreenTimeOut_Tick);
-            screenTimer.Interval = new TimeSpan(0, 0, 90);
+            screenTimer.Interval = new TimeSpan(0, 0, 60);
             screenTimer.Start();
 
             this.timer.Interval = TimeSpan.FromSeconds(1);
@@ -98,8 +121,11 @@ namespace SmartKioskApp.Views
             PaymentQR.Visibility = Visibility.Hidden;
             imgQRMethods.Visibility = Visibility.Hidden;
             txtQRTotal.Visibility = Visibility.Hidden;
+            PaymentCard.Visibility = Visibility.Hidden;
+            imgCardsAccepted.Visibility = Visibility.Hidden;
             txtTotalAmount1.Visibility = Visibility.Visible;
             txtPayInstruct1.Visibility = Visibility.Visible;
+            txtPayInstruct3.Visibility = Visibility.Hidden;
             DueAmountBar.Visibility = Visibility.Visible;
             CreditAmountBar.Visibility = Visibility.Visible;
             imgNotesAccepted.Visibility = Visibility.Visible;
@@ -107,17 +133,25 @@ namespace SmartKioskApp.Views
             ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
             Global.General.CreditAmount = 0;
             PaymentMethod = "Cash";
+            if (dispatcherTimer.IsEnabled)
+            {
+                dispatcherTimer.Stop();
+            }
+
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimer.Start();
+            
 
         }
+        public int counter = 0;
         private async void dispatcherTimer_Tick(object sender, EventArgs e)
         {
             string _method = "cash";
             if (!InAction)
             {
                 InAction = true;
+                counter++;
                 try
                 {
                     string msg = ReadWrite.Read(Global.Actions.Rejection.ToString());
@@ -145,7 +179,9 @@ namespace SmartKioskApp.Views
                             {
                                 screenTimer.Stop();
                                 screenTimer.Start();
+                                
                             }
+
                             cashAmount = Global.General.CreditAmount;
                             ItemMenu.orders[0].InsertedAmount = Global.General.CreditAmount;
 
@@ -154,6 +190,7 @@ namespace SmartKioskApp.Views
                                 Global.General.CreditAmount = Convert.ToInt32(ReadWrite.Read(Global.Actions.AddToAmount.ToString()));
                                 ItemMenu.orders[0].InsertedAmount = Global.General.CreditAmount;
                                 Global.NextAction = Global.ActionList.StartDispensing;
+                                
                             }
                             else
                             {
@@ -163,9 +200,16 @@ namespace SmartKioskApp.Views
 
                                 await txtCreditAmount.Dispatcher.BeginInvoke(new Action(() =>
                                 {
-
+                                    //if (ItemMenu.orders[0].InsertedAmount > 0)
+                                    //{
+                                    //    Back.Visibility = Visibility.Hidden;
+                                    //}
                                     txtCreditAmount.Content = Convert.ToInt32(ReadWrite.Read(Global.Actions.AddToAmount.ToString()));
                                 }));
+                                //if (counter <= 40)
+                                //{
+                                //    InAction = false;
+                                //}
                             }
                         }
                     }
@@ -192,9 +236,7 @@ namespace SmartKioskApp.Views
                     Global.General.CreditAmount = 0;
                     Global.NextAction = Global.ActionList.None;
                     InAction = false;
-                    //if (TransactionCompleted)
-                    //Dispose();
-
+                    
                 }
             }
             if (PaymentConfirmed)
@@ -213,8 +255,16 @@ namespace SmartKioskApp.Views
                 ReadWrite.Write("Stop", Global.Actions.Enabled.ToString());
                 this.Close();
                 CloseThisScreen = true;
+                dispatcherTimer.Stop();
+                dispatcherTimerCard.Stop();
+                dispatcherTimerQR.Stop();
+                dispatcherTimer = null;
+                screenTimer = null;
+                if (counter > 0)
+                {
 
-
+                }
+                _serialPort.Close();
             }
             catch (Exception ex)
             {
@@ -240,29 +290,224 @@ namespace SmartKioskApp.Views
             }
         }
 
-        //in the class constructor
 
-        public static BitmapSource BitmaSourceFromByteArray(byte[] buffer)
-        {
-            var bitmap = new BitmapImage();
-
-            using (var stream = new MemoryStream(buffer))
-            {
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.StreamSource = stream;
-                bitmap.EndInit();
-            }
-
-            bitmap.Freeze(); // optionally make it cross-thread accessible
-            return bitmap;
-        }
 
         private void btnBack(object sender, RoutedEventArgs e)
         {
             IsBack = true;
-
+            if (_serialPort.IsOpen)
+            {
+                try
+                {
+                    _serialPort.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            screenTimer.Stop();
+            dispatcherTimer.Stop();
+            dispatcherTimer = null;
+            screenTimer = null;
+            
+            ReadWrite.Write("Stop", Global.Actions.Enabled.ToString());
             this.Hide();
+        }
+        private void btnPayWithCard(object sender, RoutedEventArgs e)
+        {
+            CardPayConfirmed = false;
+            _method = "Card";
+            Back.Visibility = Visibility.Visible;
+            dateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            PaymentBar.Visibility = Visibility.Hidden;
+            txtPayInstruct.Visibility = Visibility.Hidden;
+            PaymentQR.Visibility = Visibility.Hidden;
+            imgNotesAccepted.Visibility = Visibility.Hidden;
+            PaymentCard.Visibility = Visibility.Hidden;
+            txtInstructNotes.Visibility = Visibility.Hidden;
+
+            DueAmountBar.Visibility = Visibility.Visible;
+            txtQRTotal.Visibility = Visibility.Visible;
+            txtTotalAmount1.Visibility = Visibility.Hidden;
+            txtQRTotal.Text = ItemMenu.QRdueAmount.ToString();
+            imgQRMethods.Visibility = Visibility.Hidden;
+            imgCardsAccepted.Visibility = Visibility.Visible;
+            txtPayInstruct2.Visibility = Visibility.Hidden;
+            txtPayInstruct1.Visibility = Visibility.Hidden;
+            txtPayInstruct3.Visibility = Visibility.Visible;
+            CreditAmountBar.Visibility = Visibility.Visible;
+            QRcode.Visibility = Visibility.Hidden;
+            txtInstructNotes.Visibility = Visibility.Hidden;
+            ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
+            PaymentMethod = "Card";
+            _serialPort.Close();
+            dispatcherTimerCard.Tick += new EventHandler(dispatcherTimerCard_Tick);
+            dispatcherTimerCard.Interval = new TimeSpan(0, 0, 1);
+            dispatcherTimerCard.Start();
+        }
+
+        private async void dispatcherTimerCard_Tick(object sender, EventArgs e)
+        {
+            if (!InAction)
+            {
+                InAction = true;
+                try
+                {
+                    if (Global.NextAction == Global.ActionList.None)
+                    {
+                        Global.NextAction = Global.ActionList.CollectingMoney;
+                    }
+                    if (Global.NextAction == Global.ActionList.CollectingMoney)
+                    {
+                        _ = TransactionSales(ItemMenu.QRdueAmount.ToString());
+                        if (ReadWrite.PaidAmount > 0)
+                        {
+                            ReadWrite.Write(ReadWrite.PaidAmount.ToString(), Global.Actions.AddToAmount.ToString());
+                        }
+                        Global.General.CreditAmount = Convert.ToInt32(ReadWrite.Read(Global.Actions.AddToAmount.ToString()));
+                        if (_method == "Card")
+                        {
+                            if (ReadWrite.PaidAmount != Global.General.CreditAmount)
+                            {
+                                screenTimer.Stop();
+                                screenTimer.Start();
+                            }
+                            cashAmount = Global.General.CreditAmount;
+                            if (CashHandler.GetCashInAmount() >= Global.cartTotalAmount)
+                            {
+                                Global.General.CreditAmount = Convert.ToInt32(ReadWrite.Read(Global.Actions.AddToAmount.ToString()));
+                                Console.WriteLine("Transaction in process!");
+                                Global.NextAction = Global.ActionList.StartDispensing;
+                                screenTimer.Stop();
+                                dispatcherTimer.Stop();
+                                Close();
+                            }
+                            else
+                            {
+                                Global.General.CreditAmount = Convert.ToInt32(ReadWrite.Read(Global.Actions.AddToAmount.ToString()));
+                                ItemMenu.orders[0].InsertedAmount = Global.General.CreditAmount;
+
+                            }
+
+                        }
+                    }
+
+                    if (Global.NextAction == Global.ActionList.StartDispensing)
+                    {
+                        dispatcherTimerCard.Stop();
+                        CardPayConfirmed = true;
+                    }
+                    if (CloseThisScreen)
+                    {
+                        screenTimer.Stop();
+                        dispatcherTimer.Stop();
+                        Close();
+                        _serialPort.Close();
+                        CloseThisScreen = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    Global.General.CreditAmount = 0;
+                    Global.General.CashInserted = 0;
+                    Global.NextAction = Global.ActionList.None;
+                    InAction = false;
+                }
+            }
+            if (CardPayConfirmed)
+            {
+
+                Close();
+                this.Close();
+            }
+        }
+        public  async Task TransactionSales(string amount)
+        {
+
+
+            _serialPort = new SerialPort();
+            _serialPort.PortName = Global.PORT_NUM;
+            _serialPort.BaudRate = Global.BAUD_RATE;
+            _serialPort.ReadTimeout = 65000;
+            _serialPort.Parity = Parity.None;
+            _serialPort.DataBits = 8;
+            _serialPort.StopBits = StopBits.One;
+
+            string ItemResult = "";
+            string message = "";
+            string message1 = "";
+            string message2 = "";
+
+            //convert amount into the 12 digit amount 
+
+            amount = "0000" + new string('0', 12 - amount.Length) + amount ;
+            Console.WriteLine(amount);
+            if (!_serialPort.IsOpen)
+            {
+                try
+                {
+                    _serialPort.Open();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            
+            try
+            {
+
+                //Clear POS Serial Port
+                _serialPort.Write("");
+                //Sending amount to POS machine signal
+                _serialPort.Write(amount);
+                // Thread.Sleep(3000);
+                if (!(message.ToLower().Contains("response") || message.ToLower().Contains("cancelled")))
+                {
+                    message += _serialPort.ReadExisting();
+                    Console.WriteLine("read: " + message);
+                }
+                Console.WriteLine("Pos read: " + message);
+                if (message.ToLower().Contains("date"))
+                {
+                    //Global.VMPosMachine.Timeout = false;
+                    message2 = "Date=";
+                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                    message2 = "Time=";
+                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                    message2 = "TID=";
+                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                    message2 = "MID=";
+                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                    message2 = "Total Amount=";
+                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                    //message2 ="Response=";
+                    //message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n')-1);
+                    //Console.WriteLine("Response:" + message1);
+                    CardPayConfirmed = true;
+                    //break;
+                }
+                if (message.ToLower().Contains("cancelled"))
+                {
+                    //Global.VMPosMachine.Timeout = true;
+                    ItemResult = "Timeout";
+                    //break;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Global.VMPosMachine.Timeout = false;
+                ItemResult = "Timeout";
+                //break;
+            }
+
+            _serialPort.Close();
+            Console.WriteLine( message);
         }
 
         private void btnPayWithQR(object sender, RoutedEventArgs e)
@@ -276,10 +521,13 @@ namespace SmartKioskApp.Views
             txtPayInstruct.Visibility = Visibility.Hidden;
             PaymentQR.Visibility = Visibility.Hidden;
             imgNotesAccepted.Visibility = Visibility.Hidden;
+            PaymentCard.Visibility = Visibility.Hidden;
 
             DueAmountBar.Visibility = Visibility.Visible;
             txtQRTotal.Visibility = Visibility.Visible;
             txtTotalAmount1.Visibility = Visibility.Hidden;
+            txtPayInstruct3.Visibility = Visibility.Hidden;
+            imgCardsAccepted.Visibility = Visibility.Hidden;
             txtQRTotal.Text = ItemMenu.QRdueAmount.ToString();
             imgQRMethods.Visibility = Visibility.Visible;
             txtPayInstruct2.Visibility = Visibility.Visible;
@@ -407,7 +655,6 @@ namespace SmartKioskApp.Views
                             }
 
                         }
-                        //lblWait.Text = "Sacn QR with above apps ...";
                     }
 
                     if (Global.NextAction == Global.ActionList.StartDispensing)

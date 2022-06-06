@@ -14,6 +14,8 @@ namespace SmartKioskApp
         private static string sql = null;
         private static string ConnectionString = "Integrated Security=SSPI;" + "Initial Catalog=LocDBKiosk;" + "Data Source=localhost;";
         private static SqlConnection conn = null;
+        public static string PORT_NUM = ConfigurationManager.AppSettings["PAYCARD_PORT"].ToString();
+        public static int BAUD_RATE = 115200;
 
         public enum Actions
         {

@@ -78,33 +78,6 @@ namespace SmartKioskApp
                     return "";
             }
         }
-        public static decimal ReadQRAmount(string dateTime, string MachinePAN = "")
-        {
-            string output = "", _amount = "";
-            decimal amount = 0;
-            string connString = ConfigurationManager.AppSettings["ServerCon"].ToString();
-            SqlConnection con = new SqlConnection(connString);
-            System.Data.SqlClient.SqlCommand go = new System.Data.SqlClient.SqlCommand();
-            con.Open();
-            go.Connection = con;
-            go.CommandText = "select top(1) * from BAFlNotification_Logs where PostingDateTime >= @NotiTime order by logid desc";
-            go.Parameters.Add("@NotiTime", SqlDbType.VarChar).Value = dateTime; // example value for parameter passing
-
-            SqlDataReader readIn = go.ExecuteReader();
-            while (readIn.Read())
-            {
-                output = readIn.GetValue(1) + "-" + readIn.GetValue(2) + "-" + readIn.GetValue(3) + "-" + readIn.GetValue(4) + "-" + readIn.GetValue(5) + "-" + readIn.GetValue(6) + "-" + readIn.GetValue(7) + "-" + readIn.GetValue(8) + "-" + readIn.GetValue(11) + "\r\n";
-                Console.WriteLine(output);
-                _amount = (string)readIn.GetValue(7);
-                amount = Convert.ToDecimal(_amount);
-                if (amount > 0)
-                {
-                    break;
-                }
-
-            }
-            return amount;
-        }
         
         public static async Task ReadQRAmountAPIAsync(string Date, string PAN)
         {
@@ -148,9 +121,9 @@ namespace SmartKioskApp
             {
 
             }
-            // HTTP GET.  
             
         }
+
         public static void PostDataToLDB(string serialized)
         {
             try

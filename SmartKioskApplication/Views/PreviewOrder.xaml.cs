@@ -28,15 +28,10 @@ namespace SmartKioskApp.Views
         public PreviewOrder()
         {
             InitializeComponent();
-            //Cart cart = new Cart();
-            //prevOrder.ItemsSource = cart.LoadCollectionData();
-            //ItemMenu itemMenu = new ItemMenu();
             MenuViewModel cartViewModel = new MenuViewModel();
-            //prevOrder.ItemsSource = cartViewModel.myCart;
             Models.Cart cart = new Models.Cart();
             cartViewModel.LoadCart();
             cartViewModel.LoadCategory();
-            cartViewModel.LoadIcons();
 
             itemName.Visibility = Visibility.Visible;
             itemPortion.Visibility = Visibility.Visible;
@@ -44,7 +39,8 @@ namespace SmartKioskApp.Views
             itemPrice.Visibility = Visibility.Visible;
             itemTotalPrice.Visibility = Visibility.Visible;
 
-            imgUpdateCart.Source = ItemMenu.BitmaSourceFromByteArray(cartViewModel.myIcons[7].Icon);
+            var uri = new Uri("pack://application:,,,/Icons/back icon.png");
+            imgUpdateCart.Source = new BitmapImage(uri);
 
         }
 

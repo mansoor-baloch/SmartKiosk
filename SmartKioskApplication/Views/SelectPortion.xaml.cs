@@ -31,9 +31,10 @@ namespace SmartKioskApp.Views
 
                 MenuViewModel menuViewModelObject = new MenuViewModel();
                 menuViewModelObject.LoadCategory();
-                menuViewModelObject.LoadIcons();
-                backIcon.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[6].Icon);
-                
+
+                var uri = new Uri("pack://application:,,,/Icons/back.png");
+                backIcon.Source = new BitmapImage(uri);
+
                 txtQuarter.Visibility = Visibility.Visible;
                 txtHalf.Visibility = Visibility.Visible;
                 txtStandard.Visibility = Visibility.Visible;
@@ -65,9 +66,14 @@ namespace SmartKioskApp.Views
                     txtHalf.Visibility = Visibility.Hidden;
                     priceMedium.Visibility = Visibility.Hidden;
                 }
-                imgQuarter.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[2].Icon);
-                imgHalf.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[3].Icon);
-                imgStandard.Source = BitmaSourceFromByteArray(menuViewModelObject.myIcons[4].Icon);
+                var uri1 = new Uri("pack://application:,,,/Icons/quater portion.png");
+                imgQuarter.Source = new BitmapImage(uri1);
+
+                var uri2 = new Uri("pack://application:,,,/Icons/half portion.png");
+                imgHalf.Source = new BitmapImage(uri2);
+
+                var uri3 = new Uri("pack://application:,,,/Icons/full portion 1.png");
+                imgStandard.Source = new BitmapImage(uri3);
 
                 StartCloseTimer();
 
@@ -125,21 +131,7 @@ namespace SmartKioskApp.Views
             Close();
             this.Close();
         }
-        public static BitmapSource BitmaSourceFromByteArray(byte[] buffer)
-        {
-            var bitmap = new BitmapImage();
 
-            using (var stream = new MemoryStream(buffer))
-            {
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.StreamSource = stream;
-                bitmap.EndInit();
-            }
-
-            bitmap.Freeze(); // optionally make it cross-thread accessible
-            return bitmap;
-        }
 
         private void btnBack(object sender, RoutedEventArgs e)
         {

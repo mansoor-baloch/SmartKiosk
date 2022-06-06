@@ -1,10 +1,16 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +46,8 @@ namespace SmartKioskApp.Views
         private SqlCommand cmd = null;
         private string sql = null;
         string txtDatabase = "LocDBKiosk";
-
+        private string result;
+        public const string url = "http://203.135.63.93/api/KioskMangement/GetCupcakeMenus";
         public MainWindow()
         {
             InitializeComponent();
@@ -50,8 +57,31 @@ namespace SmartKioskApp.Views
             //CreateOrdersTable(ConnectionString);
             //CreateMenuTable(ConnectionString);
             //StartPureNV();
+            //create database and related tables -code first
+            //try
+            //{
+            //    using (var ctx = new KioskContext())
+            //    {
+            //        //var stud = new Models.Menus() ;
+            //        var stud = new Menu() { };
+            //        var cat = new Category() { };
+            //        var order = new Order() { };
 
-            
+
+            //        ctx.Menu.Add(stud);
+            //        ctx.Categories.Add(cat); 
+            //        ctx.Orders.Add(order);
+
+            //        ctx.SaveChanges();
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+
+            //}
+            var uri = new Uri("pack://application:,,,/Icons/Kiosk logo.png");
+            kiosklogo.Source = new BitmapImage(uri);
+
             if (ReadWrite.Read(Global.Actions.todaysDate.ToString()) == Convert.ToString(0))
             {
                 ReadWrite.Write(DateTime.Now.ToString("MM/dd/yyyy"), Global.Actions.todaysDate.ToString());
@@ -60,30 +90,142 @@ namespace SmartKioskApp.Views
             {
                 ReadWrite.Write("0", Global.Actions.SaleNo.ToString());
             }
-           
-
-
 
             ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
             ReadWrite.Write("Stop", Global.Actions.Enabled.ToString());
-        }
 
-        public void StartPureNV()
+            ReadInsertMenu();
+        }
+        public async void ReadInsertMenu()
         {
-            ////check if Note Validator Application is running
-            if (Process.GetProcessesByName("PureNV").Length > 0)
-            {
-                // Is running
-            }
-            else
-            {
-                Process.Start(ConfigurationManager.AppSettings["NvApp"].ToString());
+            DataTable responseObj = new DataTable();
 
+            List<myMenu> list1 = new List<myMenu>();
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    using (var httpRequest = new HttpRequestMessage(new HttpMethod("GET"), url))
+                    {
+                        //var base64authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes("place_your_toke_here"));
+                        //httpRequest.Headers.TryAddWithoutValidation("Authorization", $"Basic {base64authorization}");
 
+                        //httpRequest.Accept = "application/json";
+                        //httpRequest.ContentType = "application/json";
+
+                        var response = await client.SendAsync(httpRequest);
+
+                        HttpContent responseContent = response.Content;
+
+                        using (var reader = new StreamReader(await responseContent.ReadAsStreamAsync()))
+                        {
+                            result = await reader.ReadToEndAsync();
+                            result = result.TrimStart('\"');
+                            result = result.TrimEnd();
+                            result = result.TrimEnd('\"');
+                            result = result.Replace("\\", "");
+
+                            var obj = JsonConvert.DeserializeObject<myMenu[]>(result);
+                            
+                            list1 = obj.ToList();
+                            Console.WriteLine("", list1.Count);
+                        }
+                    }
+                }
+                
             }
-            Thread.Sleep(2500);
-            ReadWrite.Write("Stop", Global.Actions.Enabled.ToString());
+
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+            try
+            {
+                //set the active status of all items to false
+                using (SqlConnection conn = new SqlConnection(ConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("Update  tblMenu set IsAvailable = 'False'", conn))
+                    {
+                        conn.Open();
+                        int rowsAffeced = cmd.ExecuteNonQuery();
+                        conn.Close();
+                    }
+                }
+                for (int i = 0; i < list1.Count; i++)
+                {
+                    using (SqlConnection conn = new SqlConnection(ConnectionString))
+                    {
+                        //updates the active flag of only the active menu items
+                        using (SqlCommand cmd = new SqlCommand("Update  tblMenu set IsAvailable = 'True' where LiveMenuId = @MenuId ", conn))
+                        {
+                            cmd.Parameters.AddWithValue("@MenuId", list1[i].MenuId);
+                            cmd.Parameters.AddWithValue("@IsAvailable", list1[i].IsAvailable);
+                            conn.Open();
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            conn.Close();
+                        }
+
+                        //inserts menu items in the DB if the item already doesn't exists
+
+                        using (SqlCommand cmd = new SqlCommand("if exists( select * from tblmenu where livemenuid = @LiveMenuId) begin (select '') end else begin INSERT INTO tblMenu" +
+                            "(LiveMenuId, ItemName, Category, PriceQP, PriceHP, PriceSP, ItemImage, HasPortion, IsAvailable ) VALUES (@LiveMenuId, @ItemName,  @Category, @PriceQP, @PriceHP, @PriceSP, @ItemImage, @HasPortion, @IsAvailable ) end", conn))
+                        //using (SqlCommand cmd = new SqlCommand("INSERT INTO tblMenu (LiveMenuId, ItemName, Category, PriceQP, PriceHP, PriceSP, ItemImage, HasPortion, IsAvailable ) VALUES (@LiveMenuId, @ItemName,  @Category, @PriceQP, @PriceHP, @PriceSP, @ItemImage, @HasPortion, @IsAvailable )", conn))
+                        {
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@ItemName", list1[i].ItemName);
+                            cmd.Parameters.AddWithValue("@Category", list1[i].Category);
+                            cmd.Parameters.AddWithValue("@LiveMenuId", list1[i].MenuId);
+                            cmd.Parameters.AddWithValue("@PriceQP", list1[i].PriceQp);
+                            cmd.Parameters.AddWithValue("@PriceHP", list1[i].PriceHp);
+                            cmd.Parameters.AddWithValue("@PriceSP", list1[i].PriceSp);
+                            cmd.Parameters.AddWithValue("@ItemImage", list1[i].ItemImage);
+                            cmd.Parameters.AddWithValue("@HasPortion", list1[i].HasPortion);
+                            cmd.Parameters.AddWithValue("@IsAvailable", list1[i].IsAvailable);
+
+                            conn.Open();
+                            int rowsAffected = cmd.ExecuteNonQuery();
+                            conn.Close();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
+        public class myMenu
+        {
+            public int MenuId { get; set; }
+            public string ItemName { get; set; }
+            public string Category { get; set; }
+            public int PriceQp { get; set; }
+            public int PriceHp { get; set; }
+            public int PriceSp { get; set; }
+            public byte[] ItemImage { get; set; }
+            public bool HasPortion { get; set; }
+            public bool IsAvailable { get; set; }
+            //public List<myMenu> MyMenu { get; set; }
+        }
+
+        //public void StartPureNV()
+        //{
+        //    ////check if Note Validator Application is running
+        //    if (Process.GetProcessesByName("PureNV").Length > 0)
+        //    {
+        //        // Is running
+        //    }
+        //    else
+        //    {
+        //        Process.Start(ConfigurationManager.AppSettings["NvApp"].ToString());
+
+
+        //    }
+        //    Thread.Sleep(2500);
+        //    ReadWrite.Write("Stop", Global.Actions.Enabled.ToString());
+        //}
         public void CreateDatabaseIfNotExists(string connectionString, string dbName)
         {
             SqlCommand cmd = null;
@@ -284,6 +426,55 @@ namespace SmartKioskApp.Views
         public double Password { get; set; }
 
     }
-   
+    public class KioskContext : DbContext
+    {
+        public KioskContext() : base("name=KioskDBConnectionString")
+        {
+
+        }
+
+        public DbSet<Menu> Menu { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Order> Orders { get; set; }
+
+
+    }
+    public class Menu
+    {
+        public int MenuID { get; set; }
+        public string ItemName { get; set; }
+        public string Category { get; set; }
+
+        public int PriceQP { get; set; }
+        public int PriceMP { get; set; }
+        public int PriceSP { get; set; }
+        public byte[] ItemImage { get; set; }
+        public bool HasPortion { get; set; }
+        public bool IsAvailable { get; set; }
+        //public Category Categories { get; set; }
+
+    }
+    public class Category
+    {
+        public int CategoryID { get; set; }
+        public string CategoryName { get; set; }
+        public byte[] CategoryIcon { get; set; }
+        public bool IsActive { get; set; }
+        //public ICollection<Menu> Menu { get; set; }
+
+    }
+    public class Order
+    {
+        public int OrderID { get; set; }
+        public string OrderNo { get; set; }
+        public int InsertedAmount { get; set; }
+        public int DueAmount { get; set; }
+        public int RemainingAmount { get; set; }
+        public int TicketNumber { get; set; }
+        public DateTime OrderDateTime { get; set; }
+        public string PaymentType { get; set; }
+    }
+
+
 }
 

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace SmartKioskApp.ViewModels
 {
@@ -54,7 +56,7 @@ namespace SmartKioskApp.ViewModels
 
         public void LoadMenu(string CategoryName )
         {
-            LoadIcons();
+            //LoadIcons();
             ObservableCollection<Menu> menu1 = new ObservableCollection<Menu>();
             conn = new SqlConnection(ConnectionString);
             conn.ConnectionString = ConnectionString;
@@ -65,13 +67,21 @@ namespace SmartKioskApp.ViewModels
             cmd = new SqlCommand(sql, conn);
             reader = cmd.ExecuteReader();
             byte[] arr;
+            var uri = new Uri("pack://application:,,,/Icons/placeholder.png");
+            
             try
             {
                 while (reader.Read())
                 {
                     if (reader.GetValue(5) == DBNull.Value)
                     {
-                        arr = myIcons[10].Icon;
+                        PngBitmapEncoder encoder = new PngBitmapEncoder();
+                        encoder.Frames.Add(BitmapFrame.Create(new BitmapImage(uri)));
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            encoder.Save(ms);
+                            arr = ms.ToArray();
+                        }
                     }
                     else
                     {
@@ -196,27 +206,27 @@ namespace SmartKioskApp.ViewModels
 
         }
 
-        public void LoadIcons()
-        {
-            ObservableCollection<Icons> icons = new ObservableCollection<Icons>();
-            conn = new SqlConnection(ConnectionString);
-            conn.ConnectionString = ConnectionString;
-            conn.Open();
-            sql = "select * from tbl_icons ";
-            cmd = new SqlCommand(sql, conn);
-            reader = cmd.ExecuteReader();
-            byte[] arr;
-            while (reader.Read())
-            {
-                arr = (byte[])(reader.GetValue(2));
-                icons.Add(new Icons { Description = Convert.ToString(reader.GetValue(1)).Trim(), Icon = arr });
-            }
-            reader.Close();
-            cmd.Dispose();
-            conn.Close();
-            myIcons = icons;
+        //public void LoadIcons()
+        //{
+        //    ObservableCollection<Icons> icons = new ObservableCollection<Icons>();
+        //    conn = new SqlConnection(ConnectionString);
+        //    conn.ConnectionString = ConnectionString;
+        //    conn.Open();
+        //    sql = "select * from tbl_icons ";
+        //    cmd = new SqlCommand(sql, conn);
+        //    reader = cmd.ExecuteReader();
+        //    byte[] arr;
+        //    while (reader.Read())
+        //    {
+        //        arr = (byte[])(reader.GetValue(2));
+        //        icons.Add(new Icons { Description = Convert.ToString(reader.GetValue(1)).Trim(), Icon = arr });
+        //    }
+        //    reader.Close();
+        //    cmd.Dispose();
+        //    conn.Close();
+        //    myIcons = icons;
 
-        }
+        //}
         public void LoadCart()
         {
             ObservableCollection<Cart> cart = new ObservableCollection<Cart>();

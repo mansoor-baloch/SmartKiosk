@@ -14,15 +14,53 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Icons\back icon.png" />
+    <None Remove="Icons\back.png" />
+    <None Remove="Icons\card pay.PNG" />
+    <None Remove="Icons\card payment methods.png" />
+    <None Remove="Icons\cart.jpg" />
+    <None Remove="Icons\Cash NOTES.png" />
+    <None Remove="Icons\cash pay.jpg" />
+    <None Remove="Icons\Editing-Delete-icon.png" />
+    <None Remove="Icons\full portion 1.png" />
+    <None Remove="Icons\half portion.png" />
+    <None Remove="Icons\Kiosk logo.png" />
+    <None Remove="Icons\placeholder.png" />
+    <None Remove="Icons\qr pay.png" />
+    <None Remove="Icons\QR payment methods.png" />
+    <None Remove="Icons\quater portion.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="PrinterUtility" Version="1.2.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="ITLlib">
       <HintPath>..\..\..\..\..\Test-App\Test-App\ITLlib.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\back icon.png" />
+    <Resource Include="Icons\back.png" />
+    <Resource Include="Icons\card pay.PNG" />
+    <Resource Include="Icons\card payment methods.png" />
+    <Resource Include="Icons\cart.jpg" />
+    <Resource Include="Icons\Cash NOTES.png" />
+    <Resource Include="Icons\cash pay.jpg" />
+    <Resource Include="Icons\Editing-Delete-icon.png" />
+    <Resource Include="Icons\full portion 1.png" />
+    <Resource Include="Icons\half portion.png" />
+    <Resource Include="Icons\Kiosk logo.png" />
+    <Resource Include="Icons\placeholder.png" />
+    <Resource Include="Icons\qr pay.png" />
+    <Resource Include="Icons\QR payment methods.png" />
+    <Resource Include="Icons\quater portion.png" />
   </ItemGroup>
 
   <ItemGroup>
