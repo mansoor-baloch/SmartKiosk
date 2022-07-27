@@ -18,7 +18,9 @@ namespace SmartKioskApp.Models
         public int insertedAmount;
         public int remainingAmount;
         public int ticketNumber;
-        public string OrderDateTime { get; set; }
+        public DateTime OrderDateTime { get; set; }
+        public int OrderId { get; set; }
+        public string PaymentType { get; set; }
         public string OrderNo
         {
             get
@@ -51,7 +53,7 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-        
+        public bool IsCompleted { get; set; }
         public int InsertedAmount
         {
             get

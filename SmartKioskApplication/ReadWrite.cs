@@ -14,13 +14,14 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Net;
 using System.IO;
+using System.Windows;
 
 namespace SmartKioskApp
 {
     public static class ReadWrite
     {
         public const string URL = "https://apibaflnotification.vendingc.com/api/Notification/Find_Notification";
-        public const string url = "http://203.135.63.93/api/KioskMangement/PostingOrderSummary";
+        public const string url = "http://kioskApi.vendingc.com/api/KioskMangement/PostingOrderSummary";
 
         //public static string urlParameters = "?QR_Gen_Time=2022-03-29 &PAN=533338625094994";
         public static string urlParameters = "";
@@ -119,7 +120,7 @@ namespace SmartKioskApp
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
             
         }
@@ -150,7 +151,7 @@ namespace SmartKioskApp
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
 
 

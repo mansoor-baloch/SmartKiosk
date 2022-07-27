@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -61,6 +62,12 @@ namespace SmartKioskApp.Views
         SerialPort _serialPort = new SerialPort();
 
         private int lastDay;
+
+        public string ItemResult = "";
+        public string message = "";
+        public string message1 = "";
+        public string message2 = "";
+
         public CheckOut()
         {
             InitializeComponent();
@@ -71,6 +78,22 @@ namespace SmartKioskApp.Views
             var uri = new Uri("pack://application:,,,/Icons/back.png");
             backIcon.Source = new BitmapImage(uri);
 
+            if (Global.QREnabled=="true")
+            {
+                PaymentQR.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                PaymentQR.Visibility = Visibility.Hidden;
+            }
+            if (Global.CardEnabled == "true")
+            {
+                PaymentCard.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                PaymentCard.Visibility = Visibility.Hidden;
+            }
             Back.Visibility = Visibility.Visible;
             DueAmountBar.Visibility = Visibility.Hidden;
             CreditAmountBar.Visibility = Visibility.Hidden;
@@ -133,15 +156,15 @@ namespace SmartKioskApp.Views
             ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
             Global.General.CreditAmount = 0;
             PaymentMethod = "Cash";
-            if (dispatcherTimer.IsEnabled)
-            {
-                dispatcherTimer.Stop();
-            }
+            //if (dispatcherTimer.IsEnabled)
+            //{
+            //    dispatcherTimer.Stop();
+            //}
 
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimer.Start();
-            
+            CloseThisScreen = false;
 
         }
         public int counter = 0;
@@ -151,7 +174,7 @@ namespace SmartKioskApp.Views
             if (!InAction)
             {
                 InAction = true;
-                counter++;
+                //counter++;
                 try
                 {
                     string msg = ReadWrite.Read(Global.Actions.Rejection.ToString());
@@ -220,12 +243,7 @@ namespace SmartKioskApp.Views
                         dispatcherTimer.Stop();
                         PaymentConfirmed = true;
                     }
-                    if (CloseThisScreen)
-                    {
-                        screenTimer.Stop();
-                        dispatcherTimer.Stop();
-                        Close();
-                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -237,6 +255,13 @@ namespace SmartKioskApp.Views
                     Global.NextAction = Global.ActionList.None;
                     InAction = false;
                     
+                }
+                if (CloseThisScreen)
+                {
+                    screenTimer.Stop();
+                    dispatcherTimer.Stop();
+                    Close();
+                    screenTimer.IsEnabled = false;
                 }
             }
             if (PaymentConfirmed)
@@ -258,19 +283,19 @@ namespace SmartKioskApp.Views
                 dispatcherTimer.Stop();
                 dispatcherTimerCard.Stop();
                 dispatcherTimerQR.Stop();
-                dispatcherTimer = null;
-                screenTimer = null;
-                if (counter > 0)
-                {
-
-                }
+                //dispatcherTimer = null;
+                //screenTimer = null;
+                
                 _serialPort.Close();
+                screenTimer.IsEnabled = false;
+                CloseThisScreen = true;
+                (sender as DispatcherTimer).Stop();
+                _serialPort.Write("");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-
         }
         
         public static int GenNewTicketNo()
@@ -308,9 +333,12 @@ namespace SmartKioskApp.Views
             }
             screenTimer.Stop();
             dispatcherTimer.Stop();
+            dispatcherTimerCard.Stop();
+            dispatcherTimerQR.Stop();
             dispatcherTimer = null;
             screenTimer = null;
-            
+            //_serialPort.Write("");
+            //(sender as DispatcherTimer).Stop();
             ReadWrite.Write("Stop", Global.Actions.Enabled.ToString());
             this.Hide();
         }
@@ -342,6 +370,7 @@ namespace SmartKioskApp.Views
             ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
             PaymentMethod = "Card";
             _serialPort.Close();
+            dispatcherTimerCard.Stop();
             dispatcherTimerCard.Tick += new EventHandler(dispatcherTimerCard_Tick);
             dispatcherTimerCard.Interval = new TimeSpan(0, 0, 1);
             dispatcherTimerCard.Start();
@@ -426,7 +455,7 @@ namespace SmartKioskApp.Views
                 this.Close();
             }
         }
-        public  async Task TransactionSales(string amount)
+        public  async Task<string> TransactionSales(string amount)
         {
 
 
@@ -438,14 +467,8 @@ namespace SmartKioskApp.Views
             _serialPort.DataBits = 8;
             _serialPort.StopBits = StopBits.One;
 
-            string ItemResult = "";
-            string message = "";
-            string message1 = "";
-            string message2 = "";
-
             //convert amount into the 12 digit amount 
-
-            amount = "0000" + new string('0', 12 - amount.Length) + amount ;
+            amount = "0200" + new string('0', 10 - amount.Length) + amount + "00";
             Console.WriteLine(amount);
             if (!_serialPort.IsOpen)
             {
@@ -458,56 +481,72 @@ namespace SmartKioskApp.Views
                     Console.WriteLine(ex.Message);
                 }
             }
-            
-            try
+            //Clear POS Serial Port
+            _serialPort.Write("");
+            //Sending amount to POS machine signal
+            _serialPort.Write(amount);
+            Console.WriteLine("writing " );
+            // Thread.Sleep(3000);
+            while (true)
             {
-
-                //Clear POS Serial Port
-                _serialPort.Write("");
-                //Sending amount to POS machine signal
-                _serialPort.Write(amount);
-                // Thread.Sleep(3000);
-                if (!(message.ToLower().Contains("response") || message.ToLower().Contains("cancelled")))
+                try
                 {
-                    message += _serialPort.ReadExisting();
-                    Console.WriteLine("read: " + message);
+                    while (!(message.ToLower().Contains("response") || message.ToLower().Contains("cancelled")))
+                    {
+                        message += _serialPort.ReadExisting();
+                        Console.WriteLine("read: " + message);
+                    }
+                    Console.WriteLine("Pos read: " + message);
+                    if (message.ToLower().Contains("date") && message.Contains("Response Code= 00"))
+                    {
+                        Global.VMPosMachine.Timeout = false;
+                        message2 = "Date=";
+                        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                        Console.WriteLine("Date:" + message1);
+                        message2 = "Time=";
+                        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                        Console.WriteLine("Time:" + message1);
+                        message2 = "TID=";
+                        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                        Console.WriteLine("TID:" + message1);
+                        message2 = "MID=";
+                        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                        Console.WriteLine("MID:" + message1);
+                        message2 = "Total Amount=";
+                        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+                        Console.WriteLine("Total Amount:" + message1);
+                        //message2 ="Response=";
+                        //message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n')-1);
+                        //Console.WriteLine("Response:" + message1);
+                       //ReadWrite.PaidAmount = 
+                        ReadWrite.Write(ReadWrite.PaidAmount.ToString(), Global.Actions.AddToAmount.ToString());
+                        CardPayConfirmed = true;
+                        _serialPort.Close();
+                        break;
+                    }
+                    if (message.ToLower().Contains("cancelled") )
+                    {
+                        Global.VMPosMachine.Timeout = true;
+                        ItemResult = "Timeout";
+                        IsPaymentCancelled = true;
+                        break;
+                    }
+                    if (message.Contains("Response Code= 35"))
+                    {
+                        Console.WriteLine("error");
+                    }
+                    break;
                 }
-                Console.WriteLine("Pos read: " + message);
-                if (message.ToLower().Contains("date"))
+                catch (Exception ex)
                 {
-                    //Global.VMPosMachine.Timeout = false;
-                    message2 = "Date=";
-                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
-                    message2 = "Time=";
-                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
-                    message2 = "TID=";
-                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
-                    message2 = "MID=";
-                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
-                    message2 = "Total Amount=";
-                    message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
-                    //message2 ="Response=";
-                    //message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n')-1);
-                    //Console.WriteLine("Response:" + message1);
-                    CardPayConfirmed = true;
-                    //break;
-                }
-                if (message.ToLower().Contains("cancelled"))
-                {
-                    //Global.VMPosMachine.Timeout = true;
+                    Global.VMPosMachine.Timeout = false;
                     ItemResult = "Timeout";
-                    //break;
+                    break;
                 }
             }
-            catch (Exception ex)
-            {
-                //Global.VMPosMachine.Timeout = false;
-                ItemResult = "Timeout";
-                //break;
-            }
-
             _serialPort.Close();
-            Console.WriteLine( message);
+            return message;
+            //  Thread.Sleep(2000);
         }
 
         private void btnPayWithQR(object sender, RoutedEventArgs e)
@@ -707,3 +746,89 @@ namespace SmartKioskApp.Views
         }
     }
 }
+
+
+
+//////////////////////////////////////
+///
+//_serialPort = new SerialPort();
+//_serialPort.PortName = Global.PORT_NUM;
+//_serialPort.BaudRate = Global.BAUD_RATE;
+//_serialPort.ReadTimeout = 65000;
+//_serialPort.Parity = Parity.None;
+//_serialPort.DataBits = 8;
+//_serialPort.StopBits = StopBits.One;
+
+//string ItemResult = "";
+//string message = "";
+//string message1 = "";
+//string message2 = "";
+
+////convert amount into the 12 digit amount 
+////MessageBox.Show(amount);
+////amount = "0200000000000180";
+//amount = "0200" + new string('0', 10 - amount.Length) + amount + "00";
+//Console.WriteLine(amount);
+//if (!_serialPort.IsOpen)
+//{
+//    try
+//    {
+//        _serialPort.Open();
+//    }
+//    catch (Exception ex)
+//    {
+//        MessageBox.Show(ex.Message);
+//    }
+//}
+
+//try
+//{
+
+//    //Clear POS Serial Port
+//    _serialPort.Write("");
+//    //Sending amount to POS machine signal
+//    _serialPort.Write(amount);
+//    //Thread.Sleep(3000);
+//    if (!(message.ToLower().Contains("response") || message.ToLower().Contains("cancelled")))
+//    {
+//        message += _serialPort.ReadExisting();
+//        Console.WriteLine("read: " + message);
+//    }
+//    Console.WriteLine("Pos read: " + message);
+//    if (message.ToLower().Contains("date"))
+//    {
+//        Global.VMPosMachine.Timeout = false;
+//        message2 = "Date=";
+//        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+//        message2 = "Time=";
+//        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+//        message2 = "TID=";
+//        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+//        message2 = "MID=";
+//        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+//        message2 = "Total Amount=";
+//        message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n'));
+//        //message2 ="Response=";
+//        //message1 = message.Substring(message.IndexOf(message2) + message2.Length, message.IndexOf('\n')-1);
+//        //Console.WriteLine("Response:" + message1);
+//        CardPayConfirmed = true;
+//        //break;
+//    }
+//    if (message.ToLower().Contains("cancelled"))
+//    {
+//        Global.VMPosMachine.Timeout = true;
+//        ItemResult = "Timeout";
+//        //break;
+//    }
+//}
+//catch (Exception ex)
+//{
+//    Global.VMPosMachine.Timeout = false;
+//    ItemResult = "Timeout";
+//    MessageBox.Show(ex.Message);
+//    //break;
+//}
+
+//_serialPort.Close();
+//Console.WriteLine( message);
+//MessageBox.Show(message);

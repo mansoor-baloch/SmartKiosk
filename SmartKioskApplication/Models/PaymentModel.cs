@@ -16,8 +16,9 @@ namespace SmartKioskApp.Models
         public int transactionAmount;
         public string paymentType;
         public string transactionDirection;
-        public string paymentDateTime;
-        
+        public string OrderNo { get; set; }
+        public int OrderId { get; set; }
+
         public int TransactionAmount
         {
             get
@@ -70,25 +71,8 @@ namespace SmartKioskApp.Models
             }
         }
 
-
-        public string PaymentDateTime
-        {
-            get
-            {
-                return paymentDateTime;
-            }
-
-            set
-            {
-                if (paymentDateTime != value)
-                {
-                    paymentDateTime = value;
-                    RaisePropertyChanged("PaymentDateTime");
-                }
-            }
-        }
-
-
+        public DateTime PaymentDateTime { get; set; }
+       
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void RaisePropertyChanged(string property)

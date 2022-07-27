@@ -58,11 +58,17 @@ namespace SmartKioskApp.Views
 
         MenuViewModel menuViewModel = new MenuViewModel();
         public bool HasPortion = false;
+        public static bool IsLive = false;
         public ItemMenu()
         {
             try
             {
                 InitializeComponent();
+                // setting the row height dynamically
+                //row1.Height = new GridLength(MainWindow.val/6.3, GridUnitType.Pixel);
+                //row2.Height = new GridLength(MainWindow.val / 6.3, GridUnitType.Pixel);
+                //row3.Height = new GridLength(MainWindow.val / 6.3, GridUnitType.Pixel);
+
                 tBtnCat1.IsChecked = true;
                 tBtnCat2.IsChecked = false;
                 tBtnCat3.IsChecked = false;
@@ -75,8 +81,6 @@ namespace SmartKioskApp.Views
 
                 var uri = new Uri("pack://application:,,,/Icons/cart.jpg");
                 imgCart.Source = new BitmapImage(uri);
-
-
                 menuViewModel.CountCategories();
                 DisplayCategories();
                 DisplayMenuItems();
@@ -84,7 +88,7 @@ namespace SmartKioskApp.Views
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.ToString());
             }
         }
         
@@ -226,7 +230,6 @@ namespace SmartKioskApp.Views
                 DisplayCategories();
                 DisplayMenuItems();
 
-
             }
             catch (Exception ex)
             {
@@ -328,21 +331,32 @@ namespace SmartKioskApp.Views
                             checkOut.txtCreditAmount.DataContext = orders[0];
                             ItemMenu.orders[0].TicketNumber = CheckOut.GenNewTicketNo();
                             ItemMenu.orders[0].RemainingAmount = ItemMenu.orders[0].InsertedAmount - ItemMenu.orders[0].DueAmount;
-                            ItemMenu.InsertOrdersTable();
 
-                            InsertCartTable();
-
-                            ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
-                            PrintReceipt();
                             CashDueAmount = orders[0].DueAmount;
-                            CancelOrder();
-                            HideDisplayButtons();
+                            PrintReceipt(); //customer copy
+                            PrintReceipt(); //accounts copy
                             OrderReceipt orderReceipt = new OrderReceipt();
                             orderReceipt.txtRemainAmount.DataContext = orders[0];
                             orderReceipt.txtTicketNo.DataContext = orders[0];
                             orderReceipt.DataContext = orders[0];
                             orderReceipt.ShowDialog();
-                            PostData.CreateJSON();
+                            MainWindow.InternetAvailable = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+                            if (MainWindow.InternetAvailable)
+                            {
+                                IsLive = true;
+                                InsertOrdersTable();
+                                InsertCartTable();
+                                PostData.CreateJSON();
+                            }
+                            else
+                            {
+                                IsLive = false;
+                                InsertOrdersTable();
+                                InsertCartTable();
+                            }
+                            ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
+                            CancelOrder();
+                            HideDisplayButtons();
                             orders[0].DueAmount = 0;
                             PaymentCompleted = false;
                         }
@@ -354,9 +368,9 @@ namespace SmartKioskApp.Views
                             ItemMenu.orders[0].DueAmount = QRdueAmount;
                             ItemMenu.InsertOrdersTable();
                             InsertCartTable();
-
-                            ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
                             PostData.CreateJSON();
+                            ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
+                            
                             OrderReceipt orderReceipt = new OrderReceipt();
                             orderReceipt.txtTicketNo.DataContext = orders[0];
                             PrintReceipt();
@@ -396,22 +410,35 @@ namespace SmartKioskApp.Views
                             ReadWrite.Write("0", Global.Actions.AddToAmount.ToString());
 
                             CashDueAmount = orders[0].DueAmount;
+                            MainWindow.InternetAvailable = System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
                             if (ItemMenu.orders[0].InsertedAmount > 0)
                             {
 
                                 ItemMenu.orders[0].TicketNumber = CheckOut.GenNewTicketNo();
                                 ItemMenu.orders[0].RemainingAmount = ItemMenu.orders[0].DueAmount - ItemMenu.orders[0].InsertedAmount;
-                                ItemMenu.InsertOrdersTable();
-                                InsertCartTable();
-                                PrintReceipt();
-                                CancelOrder();
-                                HideDisplayButtons();
+
+                                if (MainWindow.InternetAvailable)
+                                {
+                                    IsLive = true;
+                                    InsertOrdersTable();
+                                    InsertCartTable();
+                                    PostData.CreateJSON();
+                                }
+                                else
+                                {
+                                    IsLive = false;
+                                    InsertOrdersTable();
+                                    InsertCartTable();
+                                }
+                                PrintReceipt(); //customer copy
+                                PrintReceipt(); //accounts copy
                                 OrderReceipt orderReceipt = new OrderReceipt();
                                 orderReceipt.txtRemainAmount.DataContext = orders[0];
                                 orderReceipt.txtTicketNo.DataContext = orders[0];
                                 orderReceipt.DataContext = orders[0];
                                 orderReceipt.ShowDialog();
-                                PostData.CreateJSON();
+                                CancelOrder();
+                                HideDisplayButtons();
                             }
                             CancelOrder();
                             HideDisplayButtons();
@@ -464,7 +491,7 @@ namespace SmartKioskApp.Views
             {
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO tblCart (OrderNo, ItemName, Portion, Price ,  Quantity, DateTime ) VALUES (@OrderNo, @ItemName, @Portion, @Price ,  @Quantity, @DateTime )", conn))
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO tblCart (OrderNo, ItemName, Portion, Price ,  Quantity, DateTime, IsLive, LiveMenuId ) VALUES (@OrderNo, @ItemName, @Portion, @Price ,  @Quantity, @DateTime, @IsLive, @LiveMenuId )", conn))
                     {
                         cmd.CommandType = CommandType.Text;
                         cmd.Parameters.AddWithValue("@OrderNo", orders[0].OrderNo);
@@ -473,6 +500,9 @@ namespace SmartKioskApp.Views
                         cmd.Parameters.AddWithValue("@Price", carts[i].UnitPrice);
                         cmd.Parameters.AddWithValue("@Quantity", carts[i].Quantity);
                         cmd.Parameters.AddWithValue("@DateTime", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@IsLive", IsLive);
+                        cmd.Parameters.AddWithValue("@LiveMenuId", carts[i].LiveMenuId);
+
                         conn.Open();
                         int rowsAffected = cmd.ExecuteNonQuery();
                         conn.Close();
@@ -486,7 +516,8 @@ namespace SmartKioskApp.Views
             OrderDateTime = Convert.ToString(DateTime.Now);
             using (SqlConnection conn = new SqlConnection(ConnectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO tblTransactionSummary (OrderNo, InsertedAmount , DueAmount,  RemainingAmount, TicketNumber, OrderDateTime, PaymentType) VALUES (@OrderNo,  @InsertedAmount, @DueAmount, @RemainingAmount, @TicketNumber, @OrderDateTime, @PaymentType)", conn))
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO tblTransactionSummary (OrderNo, InsertedAmount , DueAmount,  RemainingAmount, TicketNumber, OrderDateTime, PaymentType, IsLive, IsCompleted) VALUES " +
+                    "(@OrderNo,  @InsertedAmount, @DueAmount, @RemainingAmount, @TicketNumber, @OrderDateTime, @PaymentType, @IsLive, @PaymentCompleted)", conn))
                 {
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.AddWithValue("@OrderNo", orders[0].OrderNo);
@@ -496,6 +527,8 @@ namespace SmartKioskApp.Views
                     cmd.Parameters.AddWithValue("@TicketNumber", orders[0].TicketNumber);
                     cmd.Parameters.AddWithValue("@OrderDateTime", Convert.ToDateTime( OrderDateTime));
                     cmd.Parameters.AddWithValue("@PaymentType", CheckOut.PaymentMethod);
+                    cmd.Parameters.AddWithValue("@PaymentCompleted", PaymentCompleted);
+                    cmd.Parameters.AddWithValue("@IsLive", IsLive);
                     conn.Open();
                     int rowsAffected = cmd.ExecuteNonQuery();
                     conn.Close();
@@ -773,6 +806,81 @@ namespace SmartKioskApp.Views
                 SelectAnItem(8);
             }
         }
+        private void btnSec10(object sender, RoutedEventArgs e)
+        {
+            tBtnSec10.IsChecked = false;
+            HasPortion = false;
+            HasQuarter = true;
+            HasHalf = true;
+            if (tBtnCat1.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[0].CatName);
+                CheckPortion(9);
+                SelectAnItem(9);
+            }
+            else if (tBtnCat2.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[1].CatName);
+                CheckPortion(9);
+                SelectAnItem(9);
+            }
+            else if (tBtnCat3.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[2].CatName);
+                CheckPortion(9);
+                SelectAnItem(9);
+            }
+        }
+        private void btnSec11(object sender, RoutedEventArgs e)
+        {
+            tBtnSec11.IsChecked = false;
+            HasPortion = false;
+            HasQuarter = true;
+            HasHalf = true;
+            if (tBtnCat1.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[0].CatName);
+                CheckPortion(10);
+                SelectAnItem(10);
+            }
+            else if (tBtnCat2.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[1].CatName);
+                CheckPortion(10);
+                SelectAnItem(10);
+            }
+            else if (tBtnCat3.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[2].CatName);
+                CheckPortion(10);
+                SelectAnItem(10);
+            }
+        }
+        private void btnSec12(object sender, RoutedEventArgs e)
+        {
+            tBtnSec12.IsChecked = false;
+            HasPortion = false;
+            HasQuarter = true;
+            HasHalf = true;
+            if (tBtnCat1.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[0].CatName);
+                CheckPortion(11);
+                SelectAnItem(11);
+            }
+            else if (tBtnCat2.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[1].CatName);
+                CheckPortion(11);
+                SelectAnItem(11);
+            }
+            else if (tBtnCat3.IsChecked == true)
+            {
+                menuViewModel.LoadMenu(menuViewModel.Categories[2].CatName);
+                CheckPortion(11);
+                SelectAnItem(11);
+            }
+        }
         public void SelectAnItem(int sec)
         {
             SelectPortion selPortion = new SelectPortion();
@@ -791,6 +899,7 @@ namespace SmartKioskApp.Views
             }
             else
             {
+                selPortion.portionClicked = "Standard";
                 if (carts.Count >= 1 && carts.Count < 8)
                 {
                     itemExists = false;
@@ -805,13 +914,13 @@ namespace SmartKioskApp.Views
                     }
                     if (!itemExists)
                     {
-                        carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked });
+                        carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked, LiveMenuId = menuViewModel.Menus[sec].LiveMenuId });
                         itemExists = false;
                     }
                 }
                 else if (carts.Count == 0) //insert by checking if cart is empty
                 {
-                    carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked });
+                    carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked, LiveMenuId = menuViewModel.Menus[sec].LiveMenuId });
                 }
                 else if (carts.Count == 8)
                 {
@@ -837,6 +946,7 @@ namespace SmartKioskApp.Views
                     cartLimit.ShowDialog();
                 }
                 HasPortion = false;
+                selPortion.portionClicked = "";
             }
 
           if (selPortion.portionClicked == "Quarter")
@@ -954,13 +1064,13 @@ namespace SmartKioskApp.Views
                     }
                     if (!itemExists)
                     {
-                        carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked });
+                        carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked, LiveMenuId = menuViewModel.Menus[sec].LiveMenuId });
                         itemExists = false;
                     }
                 }
                 else if (carts.Count == 0)
                 {
-                    carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked });
+                    carts.Add(new Models.Cart { Name = menuViewModel.Menus[sec].itemName, UnitPrice = Convert.ToString(menuViewModel.Menus[sec].priceSP), Quantity = Qty + 1, Portion = selPortion.portionClicked, LiveMenuId = menuViewModel.Menus[sec].LiveMenuId });
                 }
                 else if (carts.Count == 8)
                 {
@@ -1021,7 +1131,8 @@ namespace SmartKioskApp.Views
         }
         public void DisplayMenuItems()
         {
-            if (MenuViewModel.ItemsCount >= 9)
+
+            if (MenuViewModel.ItemsCount >= 12)
             {
                 txtItem1.DataContext = menuViewModel.Menus[0];
                 txtItem2.DataContext = menuViewModel.Menus[1];
@@ -1032,6 +1143,10 @@ namespace SmartKioskApp.Views
                 txtItem7.DataContext = menuViewModel.Menus[6];
                 txtItem8.DataContext = menuViewModel.Menus[7];
                 txtItem9.DataContext = menuViewModel.Menus[8];
+                txtItem10.DataContext = menuViewModel.Menus[9];
+                txtItem11.DataContext = menuViewModel.Menus[10];
+                txtItem12.DataContext = menuViewModel.Menus[11];
+
                 //CheckItemImage(9);
                 imgItem1.Source = BitmaSourceFromByteArray(menuViewModel.Menus[0].ItemImage);
                 imgItem2.Source = BitmaSourceFromByteArray(menuViewModel.Menus[1].ItemImage);
@@ -1042,6 +1157,10 @@ namespace SmartKioskApp.Views
                 imgItem7.Source = BitmaSourceFromByteArray(menuViewModel.Menus[6].ItemImage);
                 imgItem8.Source = BitmaSourceFromByteArray(menuViewModel.Menus[7].ItemImage);
                 imgItem9.Source = BitmaSourceFromByteArray(menuViewModel.Menus[8].ItemImage);
+                imgItem10.Source = BitmaSourceFromByteArray(menuViewModel.Menus[9].ItemImage);
+                imgItem11.Source = BitmaSourceFromByteArray(menuViewModel.Menus[10].ItemImage);
+                imgItem12.Source = BitmaSourceFromByteArray(menuViewModel.Menus[11].ItemImage);
+
                 txtItem1.Visibility = Visibility.Visible;
                 sec1.Visibility = Visibility.Visible;
                 txtItem2.Visibility = Visibility.Visible;
@@ -1060,6 +1179,164 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Visible;
                 txtItem9.Visibility = Visibility.Visible;
                 sec9.Visibility = Visibility.Visible;
+                txtItem10.Visibility = Visibility.Visible;
+                sec10.Visibility = Visibility.Visible;
+                txtItem11.Visibility = Visibility.Visible;
+                sec11.Visibility = Visibility.Visible;
+                txtItem12.Visibility = Visibility.Visible;
+                sec12.Visibility = Visibility.Visible;
+            }
+
+            if (MenuViewModel.ItemsCount == 11)
+            {
+                txtItem1.DataContext = menuViewModel.Menus[0];
+                txtItem2.DataContext = menuViewModel.Menus[1];
+                txtItem3.DataContext = menuViewModel.Menus[2];
+                txtItem4.DataContext = menuViewModel.Menus[3];
+                txtItem5.DataContext = menuViewModel.Menus[4];
+                txtItem6.DataContext = menuViewModel.Menus[5];
+                txtItem7.DataContext = menuViewModel.Menus[6];
+                txtItem8.DataContext = menuViewModel.Menus[7];
+                txtItem9.DataContext = menuViewModel.Menus[8];
+                txtItem10.DataContext = menuViewModel.Menus[9];
+                txtItem11.DataContext = menuViewModel.Menus[10];
+
+                //CheckItemImage(9);
+                imgItem1.Source = BitmaSourceFromByteArray(menuViewModel.Menus[0].ItemImage);
+                imgItem2.Source = BitmaSourceFromByteArray(menuViewModel.Menus[1].ItemImage);
+                imgItem3.Source = BitmaSourceFromByteArray(menuViewModel.Menus[2].ItemImage);
+                imgItem4.Source = BitmaSourceFromByteArray(menuViewModel.Menus[3].ItemImage);
+                imgItem5.Source = BitmaSourceFromByteArray(menuViewModel.Menus[4].ItemImage);
+                imgItem6.Source = BitmaSourceFromByteArray(menuViewModel.Menus[5].ItemImage);
+                imgItem7.Source = BitmaSourceFromByteArray(menuViewModel.Menus[6].ItemImage);
+                imgItem8.Source = BitmaSourceFromByteArray(menuViewModel.Menus[7].ItemImage);
+                imgItem9.Source = BitmaSourceFromByteArray(menuViewModel.Menus[8].ItemImage);
+                imgItem10.Source = BitmaSourceFromByteArray(menuViewModel.Menus[9].ItemImage);
+                imgItem11.Source = BitmaSourceFromByteArray(menuViewModel.Menus[10].ItemImage);
+
+                txtItem1.Visibility = Visibility.Visible;
+                sec1.Visibility = Visibility.Visible;
+                txtItem2.Visibility = Visibility.Visible;
+                sec2.Visibility = Visibility.Visible;
+                txtItem3.Visibility = Visibility.Visible;
+                sec3.Visibility = Visibility.Visible;
+                txtItem4.Visibility = Visibility.Visible;
+                sec4.Visibility = Visibility.Visible;
+                txtItem5.Visibility = Visibility.Visible;
+                sec5.Visibility = Visibility.Visible;
+                txtItem6.Visibility = Visibility.Visible;
+                sec6.Visibility = Visibility.Visible;
+                txtItem7.Visibility = Visibility.Visible;
+                sec7.Visibility = Visibility.Visible;
+                txtItem8.Visibility = Visibility.Visible;
+                sec8.Visibility = Visibility.Visible;
+                txtItem9.Visibility = Visibility.Visible;
+                sec9.Visibility = Visibility.Visible;
+                txtItem10.Visibility = Visibility.Visible;
+                sec10.Visibility = Visibility.Visible;
+                txtItem11.Visibility = Visibility.Visible;
+                sec11.Visibility = Visibility.Visible;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
+            }
+
+            if (MenuViewModel.ItemsCount == 10)
+            {
+                txtItem1.DataContext = menuViewModel.Menus[0];
+                txtItem2.DataContext = menuViewModel.Menus[1];
+                txtItem3.DataContext = menuViewModel.Menus[2];
+                txtItem4.DataContext = menuViewModel.Menus[3];
+                txtItem5.DataContext = menuViewModel.Menus[4];
+                txtItem6.DataContext = menuViewModel.Menus[5];
+                txtItem7.DataContext = menuViewModel.Menus[6];
+                txtItem8.DataContext = menuViewModel.Menus[7];
+                txtItem9.DataContext = menuViewModel.Menus[8];
+                txtItem10.DataContext = menuViewModel.Menus[9];
+
+                //CheckItemImage(9);
+                imgItem1.Source = BitmaSourceFromByteArray(menuViewModel.Menus[0].ItemImage);
+                imgItem2.Source = BitmaSourceFromByteArray(menuViewModel.Menus[1].ItemImage);
+                imgItem3.Source = BitmaSourceFromByteArray(menuViewModel.Menus[2].ItemImage);
+                imgItem4.Source = BitmaSourceFromByteArray(menuViewModel.Menus[3].ItemImage);
+                imgItem5.Source = BitmaSourceFromByteArray(menuViewModel.Menus[4].ItemImage);
+                imgItem6.Source = BitmaSourceFromByteArray(menuViewModel.Menus[5].ItemImage);
+                imgItem7.Source = BitmaSourceFromByteArray(menuViewModel.Menus[6].ItemImage);
+                imgItem8.Source = BitmaSourceFromByteArray(menuViewModel.Menus[7].ItemImage);
+                imgItem9.Source = BitmaSourceFromByteArray(menuViewModel.Menus[8].ItemImage);
+                imgItem10.Source = BitmaSourceFromByteArray(menuViewModel.Menus[9].ItemImage);
+
+                txtItem1.Visibility = Visibility.Visible;
+                sec1.Visibility = Visibility.Visible;
+                txtItem2.Visibility = Visibility.Visible;
+                sec2.Visibility = Visibility.Visible;
+                txtItem3.Visibility = Visibility.Visible;
+                sec3.Visibility = Visibility.Visible;
+                txtItem4.Visibility = Visibility.Visible;
+                sec4.Visibility = Visibility.Visible;
+                txtItem5.Visibility = Visibility.Visible;
+                sec5.Visibility = Visibility.Visible;
+                txtItem6.Visibility = Visibility.Visible;
+                sec6.Visibility = Visibility.Visible;
+                txtItem7.Visibility = Visibility.Visible;
+                sec7.Visibility = Visibility.Visible;
+                txtItem8.Visibility = Visibility.Visible;
+                sec8.Visibility = Visibility.Visible;
+                txtItem9.Visibility = Visibility.Visible;
+                sec9.Visibility = Visibility.Visible;
+                txtItem10.Visibility = Visibility.Visible;
+                sec10.Visibility = Visibility.Visible;
+                txtItem11.Visibility = Visibility.Visible;
+                sec11.Visibility = Visibility.Visible;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
+            }
+            if (MenuViewModel.ItemsCount == 9)
+            {
+                txtItem1.DataContext = menuViewModel.Menus[0];
+                txtItem2.DataContext = menuViewModel.Menus[1];
+                txtItem3.DataContext = menuViewModel.Menus[2];
+                txtItem4.DataContext = menuViewModel.Menus[3];
+                txtItem5.DataContext = menuViewModel.Menus[4];
+                txtItem6.DataContext = menuViewModel.Menus[5];
+                txtItem7.DataContext = menuViewModel.Menus[6];
+                txtItem8.DataContext = menuViewModel.Menus[7];
+                txtItem9.DataContext = menuViewModel.Menus[8];
+
+                //CheckItemImage(9);
+                imgItem1.Source = BitmaSourceFromByteArray(menuViewModel.Menus[0].ItemImage);
+                imgItem2.Source = BitmaSourceFromByteArray(menuViewModel.Menus[1].ItemImage);
+                imgItem3.Source = BitmaSourceFromByteArray(menuViewModel.Menus[2].ItemImage);
+                imgItem4.Source = BitmaSourceFromByteArray(menuViewModel.Menus[3].ItemImage);
+                imgItem5.Source = BitmaSourceFromByteArray(menuViewModel.Menus[4].ItemImage);
+                imgItem6.Source = BitmaSourceFromByteArray(menuViewModel.Menus[5].ItemImage);
+                imgItem7.Source = BitmaSourceFromByteArray(menuViewModel.Menus[6].ItemImage);
+                imgItem8.Source = BitmaSourceFromByteArray(menuViewModel.Menus[7].ItemImage);
+                imgItem9.Source = BitmaSourceFromByteArray(menuViewModel.Menus[8].ItemImage);
+
+                txtItem1.Visibility = Visibility.Visible;
+                sec1.Visibility = Visibility.Visible;
+                txtItem2.Visibility = Visibility.Visible;
+                sec2.Visibility = Visibility.Visible;
+                txtItem3.Visibility = Visibility.Visible;
+                sec3.Visibility = Visibility.Visible;
+                txtItem4.Visibility = Visibility.Visible;
+                sec4.Visibility = Visibility.Visible;
+                txtItem5.Visibility = Visibility.Visible;
+                sec5.Visibility = Visibility.Visible;
+                txtItem6.Visibility = Visibility.Visible;
+                sec6.Visibility = Visibility.Visible;
+                txtItem7.Visibility = Visibility.Visible;
+                sec7.Visibility = Visibility.Visible;
+                txtItem8.Visibility = Visibility.Visible;
+                sec8.Visibility = Visibility.Visible;
+                txtItem9.Visibility = Visibility.Visible;
+                sec9.Visibility = Visibility.Visible;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
             }
             if (MenuViewModel.ItemsCount == 8)
             {
@@ -1098,6 +1375,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Visible;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
             }
             else if (MenuViewModel.ItemsCount == 7)
             {
@@ -1108,6 +1391,7 @@ namespace SmartKioskApp.Views
                 txtItem5.DataContext = menuViewModel.Menus[4];
                 txtItem6.DataContext = menuViewModel.Menus[5];
                 txtItem7.DataContext = menuViewModel.Menus[6];
+                //txtPrice1.DataContext = menuViewModel.Menus[0];
                 imgItem1.Source = BitmaSourceFromByteArray(menuViewModel.Menus[0].ItemImage);
                 imgItem2.Source = BitmaSourceFromByteArray(menuViewModel.Menus[1].ItemImage);
                 imgItem3.Source = BitmaSourceFromByteArray(menuViewModel.Menus[2].ItemImage);
@@ -1133,6 +1417,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
             }
             else if (MenuViewModel.ItemsCount == 6)
             {
@@ -1167,6 +1457,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
             }
             else if (MenuViewModel.ItemsCount == 5)
             {
@@ -1198,6 +1494,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
             }
             else if (MenuViewModel.ItemsCount == 4)
             {
@@ -1227,6 +1529,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
             }
             else if (MenuViewModel.ItemsCount == 3)
             {
@@ -1254,6 +1562,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
 
             }
             else if (MenuViewModel.ItemsCount == 2)
@@ -1280,6 +1594,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
 
             }
             else if (MenuViewModel.ItemsCount == 1)
@@ -1304,6 +1624,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
 
             }
             else if (MenuViewModel.ItemsCount == 0)
@@ -1326,6 +1652,12 @@ namespace SmartKioskApp.Views
                 sec8.Visibility = Visibility.Hidden;
                 txtItem9.Visibility = Visibility.Hidden;
                 sec9.Visibility = Visibility.Hidden;
+                txtItem10.Visibility = Visibility.Hidden;
+                sec10.Visibility = Visibility.Hidden;
+                txtItem11.Visibility = Visibility.Hidden;
+                sec11.Visibility = Visibility.Hidden;
+                txtItem12.Visibility = Visibility.Hidden;
+                sec12.Visibility = Visibility.Hidden;
 
             }
 

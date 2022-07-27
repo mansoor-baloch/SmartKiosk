@@ -132,7 +132,7 @@
                 </StackPanel>
             </StackPanel>
 
-            <Border x:Name="PaymentQR" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Hidden"  HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
+            <Border x:Name="PaymentQR" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2"   HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
                 <Button Grid.Column="0" Height="80" Style="{StaticResource stylePayBtn}"  BorderBrush="Transparent" Background="Azure" Click="btnPayWithQR" >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Image x:Name="imgQRPay" Margin="3" />
@@ -151,7 +151,7 @@
                     </StackPanel>
                 </Button>
             </Border>
-            <Border x:Name="PaymentBar" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="SkyBlue" BorderThickness="2.5" >
+            <Border x:Name="PaymentBar" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
                 <Button Grid.Column="0" Height="80" Style="{StaticResource stylePayBtn}" Width="auto" BorderBrush="Transparent" Background="Azure" Click="btnPayWithCash" >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Image x:Name="imgCashPay" Margin="3" />
@@ -169,7 +169,7 @@
                     </StackPanel>
                 </Button>
             </Border>
-            <Border x:Name="PaymentCard" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
+            <Border x:Name="PaymentCard" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="SkyBlue" BorderThickness="2.5" >
                 <Button Grid.Column="0" Height="80" Style="{StaticResource stylePayBtn}" Width="auto" BorderBrush="Transparent" Background="Azure" Click="btnPayWithCard" >
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <Image x:Name="imgCardPay" Margin="3" />

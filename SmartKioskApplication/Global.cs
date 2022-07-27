@@ -16,7 +16,8 @@ namespace SmartKioskApp
         private static SqlConnection conn = null;
         public static string PORT_NUM = ConfigurationManager.AppSettings["PAYCARD_PORT"].ToString();
         public static int BAUD_RATE = 115200;
-
+        public static string QREnabled = ConfigurationManager.AppSettings["QREnabled"].ToString();
+        public static string CardEnabled = ConfigurationManager.AppSettings["CardEnabled"].ToString();
         public enum Actions
         {
             NotesToPay,
@@ -164,6 +165,14 @@ namespace SmartKioskApp
         public static ActionList NextAction = ActionList.None;
 
         public static int cartTotalAmount;
+        public class VMPosMachine
+        {
+            //PoS Machine Global
+            //public static string PosMachineComPort = ConfigurationManager.AppSettings["POS_PORT"].ToString();
+            public static int PosMachineBaudRate = 115200;
+            public static bool Timeout = false;
+            public static bool Settlement = false;
+        }
 
         public class NoteValidator
         {

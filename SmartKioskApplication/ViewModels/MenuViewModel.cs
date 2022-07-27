@@ -61,7 +61,7 @@ namespace SmartKioskApp.ViewModels
             conn = new SqlConnection(ConnectionString);
             conn.ConnectionString = ConnectionString;
             conn.Open();
-            sql = "select ItemName, Category, PriceQP, PriceHP, PriceSP, ItemImage, IsActive, HasPortion from tblMenu " +
+            sql = "select ItemName, Category, PriceQP, PriceHP, PriceSP, ItemImage, IsActive, HasPortion, LiveMenuId from tblMenu " +
             "inner join tblCategory on tblMenu.Category = tblCategory.CategoryName " +
             "where tblMenu.Category = '" + CategoryName + "' and IsActive = 1 and tblMenu.isAvailable = 1 ";
             cmd = new SqlCommand(sql, conn);
@@ -88,7 +88,7 @@ namespace SmartKioskApp.ViewModels
                         arr = (byte[])(reader.GetValue(5));
                     }
 
-                    menu1.Add(new Menu { ItemName = Convert.ToString(reader.GetValue(0)).Trim(), PriceQP = Convert.ToInt32(reader.GetValue(2)), PriceMP = Convert.ToInt32(reader.GetValue(3)), PriceSP = Convert.ToInt32(reader.GetValue(4)), ItemImage = arr, HasPortion = Convert.ToBoolean(reader.GetValue(7)) });
+                    menu1.Add(new Menu { ItemName = Convert.ToString(reader.GetValue(0)).Trim(), PriceQP = Convert.ToInt32(reader.GetValue(2)), PriceMP = Convert.ToInt32(reader.GetValue(3)), PriceSP = Convert.ToInt32(reader.GetValue(4)), ItemImage = arr, HasPortion = Convert.ToBoolean(reader.GetValue(7)), LiveMenuId = Convert.ToInt32(reader.GetValue(8)) });
                 }
             }
             catch (Exception ex)
@@ -202,8 +202,6 @@ namespace SmartKioskApp.ViewModels
             conn.Close();
             Categories = categories;
             
-
-
         }
 
         //public void LoadIcons()

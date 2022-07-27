@@ -19,6 +19,7 @@ namespace SmartKioskApp.Models
         public int quantity;
         public string unitPrice;
         public string totalPrice;
+        public int LiveMenuId { get; set; }
 
         public string Name
         {
@@ -123,6 +124,7 @@ namespace SmartKioskApp.Models
                 }
             }
         }
+        public DateTime OrderDateTime { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

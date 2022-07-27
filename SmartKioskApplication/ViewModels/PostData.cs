@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SmartKioskApp.ViewModels
 {
@@ -36,6 +37,10 @@ namespace SmartKioskApp.ViewModels
                     cartDetails.Portion = Views.ItemMenu.carts[i].Portion;
                     cartDetails.Quantity = Views.ItemMenu.carts[i].Quantity;
 
+                    cartDetails.selectedDateTime = Views.ItemMenu.OrderDateTime;
+                    cartDetails.purchasedItemId = Views.ItemMenu.carts[i].LiveMenuId;
+
+
                     orders1.tblOrderDetails.Add(cartDetails);
                 }
                 menuViewModel.LoadPaymentDetails(Views.ItemMenu.orders[0].OrderNo);
@@ -48,6 +53,7 @@ namespace SmartKioskApp.ViewModels
                     paymentDetails.TransactionDirection = menuViewModel.Payments[i].TransactionDirection;
                     paymentDetails.PaymentDateTime = Views.ItemMenu.OrderDateTime;
 
+
                     orders1.tblPaymentDetails.Add(paymentDetails);
                 }
                 var serialized = JsonConvert.SerializeObject( orders1);
@@ -56,10 +62,11 @@ namespace SmartKioskApp.ViewModels
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
 
         }
+        
     }
     public class Orders
     {
@@ -93,7 +100,8 @@ namespace SmartKioskApp.ViewModels
         public string Portion { get; set; }
         public int Quantity { get; set; }
         public string Price { get; set; }
-        public string DateTime { get; set; }
+        public string selectedDateTime { get; set; }
+        public int purchasedItemId { get; set; }
     }
     public class PaymentDetails
     {

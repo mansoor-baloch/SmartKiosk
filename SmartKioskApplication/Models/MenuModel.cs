@@ -100,7 +100,7 @@ namespace SmartKioskApp.Models
                 }
             }
         }
-
+        public int LiveMenuId { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void RaisePropertyChanged(string property)
