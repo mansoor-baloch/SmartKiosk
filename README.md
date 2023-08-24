@@ -32,14 +32,10 @@ Welcome to the Self-Ordering Kiosk Software project! This software application p
 
 1. Clone this repository to your local machine:
 	```bash
- 	git clone https://github.com/your-username/self-ordering-kiosk.git
-
-
-2. Navigate to the project directory:
-	 cd self-ordering-kiosk
-
-
-3. Build the solution:
+ 	git clone clone https://github.com/mansoorbalouch/Self-Ordering-Kiosk.git
+	cd self-ordering-kiosk
+	
+2. Build the solution:
 - dotnet build
 
 
